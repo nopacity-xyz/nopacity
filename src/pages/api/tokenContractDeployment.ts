@@ -5,8 +5,16 @@ type Data = {
 	output: string;
 };
 
-async function contractMaker(daoName: string, timeLock: number, votingPeriod: number, quorumFraction: number, premintAmount: number, tokenName: string, tokenSymbol: string, ) {
-
+async function contractMaker(
+	daoName: string,
+	timeLockQuantity: number,
+	timeLockPeriod: number,
+	votingPeriod: number,
+	quorumFraction: number,
+	premintAmount: number,
+	tokenName: string,
+	tokenSymbol: string
+) {
 	const [owner] = await ethers.getSigners();
 
 	const transactionCount = await owner.getTransactionCount();
@@ -18,13 +26,12 @@ async function contractMaker(daoName: string, timeLock: number, votingPeriod: nu
 	});
 
 	const MyGovernor = await ethers.getContractFactory("GovernorContract");
-	const governor = await MyGovernor.deploy(daoName,futureAddress,timeLock,votingPeriod,quorumFraction);
+	const governor = await MyGovernor.deploy(daoName, futureAddress, timeLock, votingPeriod, quorumFraction);
 
 	const MyToken = await ethers.getContractFactory("TokenContract");
-	const token = await MyToken.deploy(governor.address,premintAmount,tokenName,tokenSymbol);
+	const token = await MyToken.deploy(governor.address, premintAmount, tokenName, tokenSymbol);
 
 	console.log(`Governor deployed to ${governor.address}`, `Token deployed to ${token.address}`);
-
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -33,7 +40,5 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 	// const tokenName = "HelloToken555";
 	// const tokenSymbol = "HW";
 	// const tokenAmount = 112;
-	const fileName = "emptyContracts/contractTokenEmpty.txt";
-	contractMaker(tokenName, tokenSymbol, tokenAmount, fileName);
 	res.status(200);
 }
