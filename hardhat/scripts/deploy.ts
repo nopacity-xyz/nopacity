@@ -1,22 +1,28 @@
-import { ethers } from "hardhat";
+const { ethers } = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  const [owner, otherAccount] = await ethers.getSigners();
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  const transactionCount = await owner.getTransactionCount();
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  // gets the address of the token before it is deployed
+  const futureAddress = ethers.utils.getContractAddress({
+    from: owner.address,
+    nonce: transactionCount + 1,
+  });
 
-  await lock.deployed();
+  const MyGovernor = await ethers.getContractFactory("MyGovernor");
+  const governor = await MyGovernor.deploy(futureAddress);
 
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
+  const MyToken = await ethers.getContractFactory("MyToken");
+  const token = await MyToken.deploy(governor.address, "thisISATOKEN", "LOL");
+
+  console.log(
+    `Governor deployed to ${governor.address}`,
+    `Token deployed to ${token.address}`
+  );
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
