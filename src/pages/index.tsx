@@ -17,7 +17,7 @@ export default function Home() {
 			daoName: "",
 			votingQuantity: 0,
 			votingPeriod: 0,
-			quorumAmount: 0,
+			quorumPercentage: 0,
 		},
 	});
 
@@ -164,7 +164,7 @@ export default function Home() {
 									governor: {
 										// copy all other key-value pairs of food object
 										...prevState.governor,
-										quorumAmount: parseInt(e.target.value),
+										quorumPercentage: parseInt(e.target.value),
 									},
 								}))
 							}></input>
