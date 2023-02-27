@@ -1,120 +1,168 @@
-import { anyValue } from '@nomicfoundation/hardhat-chai-matchers/withArgs'
-import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers'
-import { expect } from 'chai'
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers'
+import { assert } from 'chai'
 import { ethers } from 'hardhat'
+const { parseEther } = ethers.utils
 
-describe('Lock', function () {
-  // We define a fixture to reuse the same setup in every test.
-  // We use loadFixture to run this setup once, snapshot that state,
-  // and reset Hardhat Network to that snapshot in every test.
-  async function deployOneYearLockFixture() {
-    const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60
-    const ONE_GWEI = 1_000_000_000
+describe('Testing of the governor and Token Contract ', function () {
+  async function deployFixture() {
+    const [owner, voter1, voter2, voter3, voter4, voter5, voter6] =
+      await ethers.getSigners()
+    const daoName = 'ETHSD'
+    const votingPeriod = 50400
+    const quorumPercentage = 4
+    const premintAmount = 10000
+    const tokenName = 'OurToken'
+    const tokenSymbol = 'OUT'
+    const minDelay = 504
 
-    const lockedAmount = ONE_GWEI
-    const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS
+    const transactionCountGovernor = await owner.getTransactionCount()
 
-    // Contracts are deployed using the first signer/account by default
-    const [owner, otherAccount] = await ethers.getSigners()
+    const futureGovermentAddress = ethers.utils.getContractAddress({
+      from: owner.address,
+      nonce: transactionCountGovernor
+    })
 
-    const Lock = await ethers.getContractFactory('Lock')
-    const lock = await Lock.deploy(unlockTime, { value: lockedAmount })
+    const TimeLockAddress = await ethers.getContractFactory(
+      'MyTimelockController'
+    )
+    const timeLockAddress = await TimeLockAddress.deploy(
+      minDelay,
+      [futureGovermentAddress],
+      ['0x0000000000000000000000000000000000000000'],
+      owner.address,
+      { gasLimit: 30000000 }
+    )
 
-    return { lock, unlockTime, lockedAmount, owner, otherAccount }
+    console.log('TIME LOCK: ' + timeLockAddress.address)
+
+    const transactionCount = await owner.getTransactionCount()
+
+    const futureTokenAddress = ethers.utils.getContractAddress({
+      from: owner.address,
+      nonce: transactionCount + 1
+    })
+
+    const GovernorContract = await ethers.getContractFactory(
+      'GovernorContractTimeLock'
+    )
+    const governorContract = await GovernorContract.deploy(
+      daoName,
+      futureTokenAddress,
+      timeLockAddress.address,
+      votingPeriod,
+      quorumPercentage,
+      { gasLimit: 30000000 }
+    )
+
+    console.log('GOVERNOR CONTRACT: ' + governorContract.address)
+
+    const TokenContract = await ethers.getContractFactory('TokenContract')
+    const tokenContract = await TokenContract.deploy(
+      governorContract.address,
+      premintAmount,
+      tokenName,
+      tokenSymbol,
+      { gasLimit: 30000000 }
+    )
+
+    console.log('TOKEN CONTRACT: ' + tokenContract.address)
+
+    await tokenContract.delegate(owner.address)
+
+    return {
+      governorContract,
+      tokenContract,
+      owner,
+      voter1,
+      voter2,
+      voter3,
+      voter4,
+      voter5,
+      voter6
+    }
   }
 
-  describe('Deployment', function () {
-    it('Should set the right unlockTime', async function () {
-      const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture)
+  it('should provide the owner with a starting balance', async () => {
+    const {
+      // governorContract,
+      tokenContract,
+      owner
+      //   voter1,
+      //   voter2,
+      //   voter3,
+      //   voter4,
+      //   voter5,
+      //   voter6
+    } = await loadFixture(deployFixture)
 
-      expect(await lock.unlockTime()).to.equal(unlockTime)
-    })
-
-    it('Should set the right owner', async function () {
-      const { lock, owner } = await loadFixture(deployOneYearLockFixture)
-
-      expect(await lock.owner()).to.equal(owner.address)
-    })
-
-    it('Should receive and store the funds to lock', async function () {
-      const { lock, lockedAmount } = await loadFixture(deployOneYearLockFixture)
-
-      expect(await ethers.provider.getBalance(lock.address)).to.equal(
-        lockedAmount
-      )
-    })
-
-    it('Should fail if the unlockTime is not in the future', async function () {
-      // We don't use the fixture here because we want a different deployment
-      const latestTime = await time.latest()
-      const Lock = await ethers.getContractFactory('Lock')
-      await expect(Lock.deploy(latestTime, { value: 1 })).to.be.revertedWith(
-        'Unlock time should be in the future'
-      )
-    })
-  })
-
-  describe('Withdrawals', function () {
-    describe('Validations', function () {
-      it('Should revert with the right error if called too soon', async function () {
-        const { lock } = await loadFixture(deployOneYearLockFixture)
-
-        await expect(lock.withdraw()).to.be.revertedWith(
-          "You can't withdraw yet"
-        )
-      })
-
-      it('Should revert with the right error if called from another account', async function () {
-        const { lock, unlockTime, otherAccount } = await loadFixture(
-          deployOneYearLockFixture
-        )
-
-        // We can increase the time in Hardhat Network
-        await time.increaseTo(unlockTime)
-
-        // We use lock.connect() to send a transaction from another account
-        await expect(lock.connect(otherAccount).withdraw()).to.be.revertedWith(
-          "You aren't the owner"
-        )
-      })
-
-      it("Shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
-        const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture)
-
-        // Transactions are sent using the first signer by default
-        await time.increaseTo(unlockTime)
-
-        await expect(lock.withdraw()).not.to.be.reverted
-      })
-    })
-
-    describe('Events', function () {
-      it('Should emit an event on withdrawals', async function () {
-        const { lock, unlockTime, lockedAmount } = await loadFixture(
-          deployOneYearLockFixture
-        )
-
-        await time.increaseTo(unlockTime)
-
-        await expect(lock.withdraw())
-          .to.emit(lock, 'Withdrawal')
-          .withArgs(lockedAmount, anyValue) // We accept any value as `when` arg
-      })
-    })
-
-    describe('Transfers', function () {
-      it('Should transfer the funds to the owner', async function () {
-        const { lock, unlockTime, lockedAmount, owner } = await loadFixture(
-          deployOneYearLockFixture
-        )
-
-        await time.increaseTo(unlockTime)
-
-        await expect(lock.withdraw()).to.changeEtherBalances(
-          [owner, lock],
-          [lockedAmount, -lockedAmount]
-        )
-      })
-    })
+    const balance = await tokenContract.balanceOf(owner.address)
+    assert.equal(balance.toString(), parseEther('10000'))
   })
 })
+
+// describe("after proposing", () => {
+//   async function afterProposingFixture() {
+//     const deployValues = await deployFixture();
+//     const { governorContract, tokenContract, owner } = deployValues;
+
+//     const tx = await governor.propose(
+//       [token.address],
+//       [0],
+//       [token.interface.encodeFunctionData("mint", [owner.address, parseEther("25000")])],
+//       "Give the owner more tokens!"
+//     );
+//     const receipt = await tx.wait();
+//     const event = receipt.events.find(x => x.event === 'ProposalCreated');
+//     const { proposalId } = event.args;
+
+//     // wait for the 1 block voting delay
+//     await hre.network.provider.send("evm_mine");
+
+//     return { ...deployValues, proposalId }
+//   }
+
+// it("should set the initial state of the proposal", async () => {
+//   const { governorContract, proposalId } = await loadFixture(afterProposingFixture);
+
+//   const state = await governorContract.state(proposalId);
+//   assert.equal(state, 0);
+// });
+
+// describe("after voting", () => {
+//   async function afterVotingFixture() {
+//     const proposingValues = await afterProposingFixture();
+//     const { governorContract, proposalId } = proposingValues;
+
+//     const tx = await governorContract.castVote(proposalId, 1);
+//     const receipt = await tx.wait();
+//     const voteCastEvent = receipt.events.find(x => x.event === 'VoteCast');
+
+//     // wait for the 1 block voting period
+//     await hre.network.provider.send("evm_mine");
+
+//     return { ...proposingValues, voteCastEvent }
+//   }
+
+// it("should have set the vote", async () => {
+//   const { voteCastEvent, owner } = await loadFixture(afterVotingFixture);
+
+//   assert.equal(voteCastEvent.args.voter, owner.address);
+//   assert.equal(voteCastEvent.args.weight.toString(), parseEther("10000").toString());
+// });
+
+// it("should allow executing the proposal", async () => {
+//   const { governor, token, owner } = await loadFixture(afterVotingFixture);
+
+//   await governor.execute(
+//     [token.address],
+//     [0],
+//     [token.interface.encodeFunctionData("mint", [owner.address, parseEther("25000")])],
+//     keccak256(toUtf8Bytes("Give the owner more tokens!"))
+//   );
+
+// const balance = await token.balanceOf(owner.address);
+// assert.equal(balance.toString(), parseEther("35000").toString());
+// });
+//     });
+//   });
+// });
