@@ -7,9 +7,9 @@ type Data = {
 
 async function contractMaker(
 	daoName: string,
-	timeLockQuantity: number,
-	timeLockPeriod: number,
-	votingPeriod: number,
+	timeLock: string,
+	votingPeriod: string,
+	votingQuantity: number,
 	quorumFraction: number,
 	premintAmount: number,
 	tokenName: string,
@@ -26,7 +26,7 @@ async function contractMaker(
 	});
 
 	const MyGovernor = await ethers.getContractFactory("GovernorContract");
-	const governor = await MyGovernor.deploy(daoName, futureAddress, timeLock, votingPeriod, quorumFraction);
+	const governor = await MyGovernor.deploy(daoName, futureAddress, timeLock, votingQuantity, quorumFraction);
 
 	const MyToken = await ethers.getContractFactory("TokenContract");
 	const token = await MyToken.deploy(governor.address, premintAmount, tokenName, tokenSymbol);
