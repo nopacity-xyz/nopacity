@@ -1,41 +1,44 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import styles from "@/styles/Home.module.css";
-import { useState } from "react";
+import { Inter } from 'next/font/google'
+import Head from 'next/head'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import Image from 'next/image'
+import { useState } from 'react'
 
-const inter = Inter({ subsets: ["latin"] });
+import styles from '@/styles/Home.module.css'
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
 	const [DAOData, setDAOData] = useState({
 		token: {
-			tokenName: "",
-			tokenSymbol: "",
-			premintAmount: 0,
+			tokenName: '',
+			tokenSymbol: '',
+			premintAmount: 0
 		},
 		governor: {
-			daoName: "",
+			daoName: '',
 			votingQuantity: 0,
 			votingPeriod: 0,
-			quorumAmount: 0,
-		},
-	});
+			quorumAmount: 0
+		}
+	})
 
-	const handleSubmit = (e: Event) => {
-		e.preventDefault();
+	const handleSubmit = async (e: Event) => {
+		e.preventDefault()
 
-		const data = DAOData;
+		const data = DAOData
 
-		console.log(JSON.stringify(data));
+		console.log(JSON.stringify(data))
 
-		fetch("/api/deploy", {
-			method: "POST",
+		await fetch('/api/deploy', {
+			method: 'POST',
 			headers: {
-				"Content-Type": "application/json",
+				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(data),
-		});
-	};
+			body: JSON.stringify(data)
+		})
+	}
 
 	return (
 		<>
@@ -53,98 +56,103 @@ export default function Home() {
 					</p>
 					<div>
 						<label>Token Settings</label>
-						<br></br>
+						<br />
 						<label>Token Name</label>
-						<br></br>
+						<br />
 						<input
 							className="tokenName"
-							onChange={(e) =>
-								setDAOData((prevState) => ({
+							onChange={e =>
+								setDAOData(prevState => ({
 									...prevState,
 									token: {
 										// copy all other key-value pairs of food object
 										...prevState.token,
-										tokenName: e.target.value,
-									},
+										tokenName: e.target.value
+									}
 								}))
-							}></input>
-						<br></br>
+							}
+						/>
+						<br />
 						<label>Token Symbol</label>
-						<br></br>
+						<br />
 						<input
 							className="tokenSymbol"
-							onChange={(e) =>
-								setDAOData((prevState) => ({
+							onChange={e =>
+								setDAOData(prevState => ({
 									...prevState,
 									token: {
 										// copy all other key-value pairs of food object
 										...prevState.token,
-										tokenSymbol: e.target.value,
-									},
+										tokenSymbol: e.target.value
+									}
 								}))
-							}></input>
-						<br></br>
+							}
+						/>
+						<br />
 						<label>Premint Amount</label>
-						<br></br>
+						<br />
 						<input
 							className="tokenAmount"
-							onChange={(e) =>
-								setDAOData((prevState) => ({
+							onChange={e =>
+								setDAOData(prevState => ({
 									...prevState,
 									token: {
 										// copy all other key-value pairs of food object
 										...prevState.token,
-										premintAmount: parseInt(e.target.value),
-									},
+										premintAmount: parseInt(e.target.value)
+									}
 								}))
-							}></input>
-						<br></br>
-						<br></br>
-						<br></br>
+							}
+						/>
+						<br />
+						<br />
+						<br />
 						<label>Governor Settings</label>
-						<br></br>
+						<br />
 						<label>DAO Name</label>
-						<br></br>
+						<br />
 						<input
 							className="DAOName"
-							onChange={(e) =>
-								setDAOData((prevState) => ({
+							onChange={e =>
+								setDAOData(prevState => ({
 									...prevState,
 									governor: {
 										// copy all other key-value pairs of food object
 										...prevState.governor,
-										daoName: e.target.value,
-									},
+										daoName: e.target.value
+									}
 								}))
-							}></input>
-						<br></br>
+							}
+						/>
+						<br />
 						<label>Voting Quantity</label>
-						<br></br>
+						<br />
 						<input
 							className="votingQuantity"
-							onChange={(e) =>
-								setDAOData((prevState) => ({
+							onChange={e =>
+								setDAOData(prevState => ({
 									...prevState,
 									governor: {
 										// copy all other key-value pairs of food object
 										...prevState.governor,
-										votingQuantity: parseInt(e.target.value),
-									},
+										votingQuantity: parseInt(e.target.value)
+									}
 								}))
-							}></input>
-						<br></br>
+							}
+						/>
+						<br />
 						<label>Voting Period</label>
-						<br></br>
+						<br />
 						<select
 							className="votingPeriod"
-							onChange={(e) =>
-								setDAOData((prevState) => ({
+							onChange={e =>
+								setDAOData(prevState => ({
 									...prevState,
 									governor: {
 										// copy all other key-value pairs of food object
 										...prevState.governor,
-										votingPeriod: parseInt(e.target.value),
-									},
+										votingPeriod: parseInt(e.target.value)
+									}
 								}))
 							}>
 							<option value="seconds">seconds</option>
@@ -153,27 +161,28 @@ export default function Home() {
 							<option value="days">days</option>
 							<option value="weeks">weeks</option>
 						</select>
-						<br></br>
+						<br />
 						<label>Quorum Amount</label>
-						<br></br>
+						<br />
 						<input
 							className="Quarum Amount"
-							onChange={(e) =>
-								setDAOData((prevState) => ({
+							onChange={e =>
+								setDAOData(prevState => ({
 									...prevState,
 									governor: {
 										// copy all other key-value pairs of food object
 										...prevState.governor,
-										quorumAmount: parseInt(e.target.value),
-									},
+										quorumAmount: parseInt(e.target.value)
+									}
 								}))
-							}></input>
-						<br></br>
-						<br></br>
-						<button onClick={handleSubmit}>SUBMIT</button>
+							}
+						/>
+						<br />
+						<br />
+						<button onClick={() => handleSubmit}>SUBMIT</button>
 					</div>
 				</div>
 			</main>
 		</>
-	);
+	)
 }

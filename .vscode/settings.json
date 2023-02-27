@@ -1,0 +1,11 @@
+{
+  "eslint.workingDirectories": [
+    { "directory": "./hardhat"},
+    { "directory": "./"},
+  ],
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "[solidity]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
