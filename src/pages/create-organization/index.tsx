@@ -11,6 +11,7 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
+  InputLeftElement,
   Progress,
   Select,
   SimpleGrid,
@@ -29,12 +30,14 @@ const Form1 = () => {
     },
     governor: {
       daoName: '',
+      daoDescription: '',
       votingQuantity: 0,
-      votingPeriod: 0,
+      votingPeriod: '',
+      proposalThreshold: 0,
       quorumFraction: 0
     }
   })
-  const [show /* setShow */] = React.useState(false)
+  // const [show /* setShow */] = React.useState(false)
   // const handleClick = () => setShow(!show)
   return (
     <>
@@ -43,17 +46,42 @@ const Form1 = () => {
         Configure Company
       </Heading>
       <Flex>
+        {/* DAO NAME */}
         <FormControl mr="5%">
-          <FormLabel htmlFor="first-name" fontWeight="normal">
-            Company Name
-          </FormLabel>
-          <Input id="DAOName" placeholder="The Muffin Man" />
+          <FormLabel fontWeight="normal">Company Name</FormLabel>
+          <Input
+            id="dao-name"
+            placeholder="The Muffin Man"
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setDAOData(prevState => ({
+                ...prevState,
+                governor: {
+                  // copy all other key-value pairs of food object
+                  ...prevState.governor,
+                  daoName: e.target.value
+                }
+              }))
+            }}
+          />
         </FormControl>
+        {/* DAO DESCRIPTION */}
         <FormControl>
-          <FormLabel htmlFor="last-name" fontWeight="normal">
-            Company Description
-          </FormLabel>
-          <Input id="DAODescription" placeholder="The one on Drury Lane" />
+          <FormLabel fontWeight="normal">Company Description</FormLabel>
+          <Textarea
+            id="dao-description"
+            placeholder="The one on Drury Lane"
+            rows={2}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+              setDAOData(prevState => ({
+                ...prevState,
+                governor: {
+                  // copy all other key-value pairs of food object
+                  ...prevState.governor,
+                  daoDescription: e.target.value
+                }
+              }))
+            }}
+          />
         </FormControl>
       </Flex>
       <Flex mt="5%">
@@ -66,50 +94,89 @@ const Form1 = () => {
       </Flex>
       <Flex>
         <Flex>
+          {/* VOTING PERIOD AMOUNT */}
           <FormControl mr="5%">
-            <FormLabel htmlFor="email" fontWeight="normal">
+            <FormLabel htmlFor="voting-period-amount" fontWeight="normal">
               Amount
             </FormLabel>
-            <Input id="email" type="email" />
+            <Input
+              id="voting-period-amount"
+              type=""
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setDAOData(prevState => ({
+                  ...prevState,
+                  governor: {
+                    // copy all other key-value pairs of food object
+                    ...prevState.governor,
+                    votingQuantity: parseInt(e.target.value)
+                  }
+                }))
+              }}
+            />
           </FormControl>
+          {/* VOTING PERIOD TIME */}
           <FormControl mr="5%">
-            <FormLabel htmlFor="email" fontWeight="normal">
+            <FormLabel htmlFor="voting-period-time" fontWeight="normal">
               Time
             </FormLabel>
             <Select
-              className="votingPeriod"
-              placeholder="Voting Period"
+              className="voting-period-time"
+              placeholder="weeks"
               onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                 setDAOData(prevState => ({
                   ...prevState,
                   governor: {
                     // copy all other key-value pairs of food object
                     ...prevState.governor,
-                    votingPeriod: parseInt(e.target.value)
+                    votingPeriod: e.target.value
                   }
                 }))
               }}
             >
-              <option value="seconds">seconds</option>
-              <option value="minutes">minutes</option>
-              <option value="hours">hours</option>
-              <option value="days">days</option>
               <option value="weeks">weeks</option>
+              <option value="days">days</option>
+              <option value="hours">hours</option>
+              <option value="minutes">minutes</option>
+              <option value="seconds">seconds</option>
             </Select>
           </FormControl>
         </Flex>
         <Flex>
+          {/* VOTING THRESHOLD */}
           <FormControl mr="5%">
-            <FormLabel htmlFor="email" fontWeight="normal">
-              Threshold
-            </FormLabel>
-            <Input id="email" type="email" />
+            <FormLabel fontWeight="normal">Threshold</FormLabel>
+            <Input
+              id="email"
+              type="email"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setDAOData(prevState => ({
+                  ...prevState,
+                  governor: {
+                    // copy all other key-value pairs of food object
+                    ...prevState.governor,
+                    proposalThreshold: parseInt(e.target.value)
+                  }
+                }))
+              }}
+            />
           </FormControl>
+          {/* VOTING QUORUM PERCENTAGE */}
           <FormControl>
-            <FormLabel htmlFor="email" fontWeight="normal">
-              Quorum %
-            </FormLabel>
-            <Input id="email" type="email" />
+            <FormLabel fontWeight="normal">Quorum %</FormLabel>
+            <Input
+              id="email"
+              type="email"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setDAOData(prevState => ({
+                  ...prevState,
+                  governor: {
+                    // copy all other key-value pairs of food object
+                    ...prevState.governor,
+                    quorumFraction: parseInt(e.target.value)
+                  }
+                }))
+              }}
+            />
           </FormControl>
         </Flex>
       </Flex>
@@ -118,39 +185,79 @@ const Form1 = () => {
         Configure Token
       </Heading>
       <Flex>
-        <FormControl>
-          <FormLabel htmlFor="password" fontWeight="normal" mt="2%">
+        {/* TOKEN NAME */}
+        <FormControl mr="5%">
+          <FormLabel fontWeight="normal" mt="2%">
             Token Name
           </FormLabel>
           <InputGroup size="md">
             <Input
               pr="4.5rem"
-              type={show ? 'text' : 'password'}
+              type="text"
               placeholder="US Dollar"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setDAOData(prevState => ({
+                  ...prevState,
+                  token: {
+                    // copy all other key-value pairs of food object
+                    ...prevState.token,
+                    tokenName: e.target.value
+                  }
+                }))
+              }}
             />
           </InputGroup>
         </FormControl>
-        <FormControl>
-          <FormLabel htmlFor="password" fontWeight="normal" mt="2%">
+        {/* TOKEN SYMBOL */}
+        <FormControl mr="5%">
+          <FormLabel fontWeight="normal" mt="2%">
             Token Symbol
           </FormLabel>
           <InputGroup size="md">
             <Input
               pr="4.5rem"
-              type={show ? 'text' : 'password'}
+              // type={show ? 'text' : 'password'}
               placeholder="USD"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setDAOData(prevState => ({
+                  ...prevState,
+                  token: {
+                    // copy all other key-value pairs of food object
+                    ...prevState.token,
+                    tokenSymbol: e.target.value
+                  }
+                }))
+              }}
             />
           </InputGroup>
         </FormControl>
+        {/* TOKEN PREMINT AMOUNT */}
         <FormControl>
-          <FormLabel htmlFor="password" fontWeight="normal" mt="2%">
+          <FormLabel fontWeight="normal" mt="2%">
             Token Quantity
           </FormLabel>
           <InputGroup size="md">
+            <InputLeftElement
+              pointerEvents="none"
+              color="gray.300"
+              // fontSize="1.2em"
+              // eslint-disable-next-line react/no-children-prop
+              children={'$' + DAOData.token.tokenSymbol}
+            />
             <Input
               pr="4.5rem"
-              type={show ? 'text' : 'password'}
+              // type={show ? 'text' : 'password'}
               placeholder="1,000,000"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setDAOData(prevState => ({
+                  ...prevState,
+                  token: {
+                    // copy all other key-value pairs of food object
+                    ...prevState.token,
+                    premintAmount: parseInt(e.target.value)
+                  }
+                }))
+              }}
             />
           </InputGroup>
         </FormControl>
@@ -372,6 +479,7 @@ export default function CreateOrganization() {
   const toast = useToast()
   const [step, setStep] = useState(1)
   const [progress, setProgress] = useState(33.33)
+  const [deploying, setDeploying] = useState(false)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [DAOData, setDAOData] = useState({
@@ -392,16 +500,24 @@ export default function CreateOrganization() {
   const handleSubmit = async (e: Event) => {
     e.preventDefault()
 
-    const data = DAOData
-
-    console.log(JSON.stringify(data))
-
+    console.log(JSON.stringify(DAOData))
+    setDeploying(true)
     await fetch('/api/deploy', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(DAOData)
+    }).then(() => {
+      setDeploying(false)
+      setStep(3)
+      toast({
+        title: 'Account created.',
+        description: 'Company Deployed! 🎉',
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      })
     })
   }
 
@@ -454,6 +570,7 @@ export default function CreateOrganization() {
               ) : (
                 <Button
                   w="7rem"
+                  isLoading={deploying}
                   isDisabled={step === 3}
                   onClick={() => {
                     setStep(step + 1)
