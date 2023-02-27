@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { ethers } = require('hardhat')
+import { ethers } from 'hardhat'
 
 async function main() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
