@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"build": "hardhat compile",
 		"fix": "eslint . --fix",
 		"lint": "eslint ."
 	},
