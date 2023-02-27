@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"build": "hardhat compile",
+		"clean": "rm -rf artifacts cache typechain-types",
 		"fix": "eslint . --fix",
 		"lint": "eslint ."
 	},
