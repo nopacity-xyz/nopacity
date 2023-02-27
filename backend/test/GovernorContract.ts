@@ -96,7 +96,7 @@ describe('Testing of the governor and Token Contract ', function () {
     } = await loadFixture(deployFixture)
 
     const balance = await tokenContract.balanceOf(owner.address)
-    assert.equal(balance.toString(), parseEther('10000'))
+    assert.equal(balance.toString(), parseEther('10000').toString())
   })
 })
 
