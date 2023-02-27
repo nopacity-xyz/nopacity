@@ -9,9 +9,8 @@ interface Data {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function contractMaker(
 	daoName: string,
-	timeLock: string,
-	votingPeriod: string,
 	votingQuantity: number,
+	votingPeriod: string,
 	quorumFraction: number,
 	premintAmount: number,
 	tokenName: string,
@@ -28,7 +27,7 @@ async function contractMaker(
 	})
 
 	const MyGovernor = await ethers.getContractFactory('GovernorContract')
-	const governor = await MyGovernor.deploy(daoName, futureAddress, timeLock, votingQuantity, quorumFraction)
+	const governor = await MyGovernor.deploy(daoName, futureAddress, votingPeriod, quorumFraction)
 
 	const MyToken = await ethers.getContractFactory('TokenContract')
 	const token = await MyToken.deploy(governor.address, premintAmount, tokenName, tokenSymbol)
@@ -41,8 +40,5 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { tokenName, tokenSymbol, tokenAmount } = req.body
 
-	// const tokenName = "HelloToken555";
-	// const tokenSymbol = "HW";
-	// const tokenAmount = 112;
 	res.status(200)
 }
