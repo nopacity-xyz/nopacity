@@ -1,10 +1,9 @@
 {
-	"useTabs": true,
-	"tabWidth": 4,
-	"bracketSpacing": true,
-	"printWidth": 120,
-	"bracketSameLine": true,
-	"overrides": [
+  "bracketSameLine": true,
+  "bracketSpacing": true,
+  "endOfLine": "auto",
+  "printWidth": 120,
+  "overrides": [
     {
       "files": "*.sol",
       "options": {
@@ -15,5 +14,7 @@
         "bracketSpacing": true
       }
     }
-  ]
+  ],
+  "tabWidth": 4,
+  "useTabs": true
 }
