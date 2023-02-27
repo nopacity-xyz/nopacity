@@ -1,3 +1,3 @@
 export default function DAOResult() {
-	return <div>DAOResult</div>
+  return <div>DAOResult</div>
 }
