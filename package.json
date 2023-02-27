@@ -4,12 +4,12 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
-		"build": "next build",
+		"build": "next build && cd backend && npm run build",
 		"start": "next start",
 		"fix": "next lint -- --fix && cd backend && npm run fix",
 		"lint": "next lint && cd backend && npm run lint",
 		"prepare": "husky install",
-		"precommit": "npm-run-all lint"
+		"precommit": "npm-run-all build lint"
 	},
 	"dependencies": {
 		"@chakra-ui/icons": "^2.0.17",
