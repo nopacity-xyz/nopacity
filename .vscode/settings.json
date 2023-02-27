@@ -1,6 +1,6 @@
 {
   "eslint.workingDirectories": [
-    { "directory": "./hardhat"},
+    { "directory": "./backend"},
     { "directory": "./"},
   ],
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",

@@ -6,8 +6,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"fix": "next lint -- --fix && cd hardhat && npm run fix",
-		"lint": "next lint && cd hardhat && npm run lint",
+		"fix": "next lint -- --fix && cd backend && npm run fix",
+		"lint": "next lint && cd backend && npm run lint",
 		"prepare": "husky install",
 		"precommit": "npm-run-all lint"
 	},
