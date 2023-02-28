@@ -6,8 +6,12 @@
   "scripts": {
     "build": "hardhat compile",
     "clean": "rm -rf artifacts cache typechain-types",
-    "fix": "eslint . --fix && prettier --write .",
-    "lint": "eslint . && prettier -c .",
+    "fix": "npm-run-all -p fix.es fix.other",
+    "fix.es": "eslint . --fix",
+    "fix.other": "prettier --write --ignore-path .other.prettierignore .",
+    "lint": "npm-run-all -p lint.es lint.other",
+    "lint.es": "eslint .",
+    "lint.other": "prettier --ignore-path .other.prettierignore -c .",
     "test": "hardhat test"
   },
   "keywords": [],
@@ -19,6 +23,8 @@
     "hardhat": "^2.12.6"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.1"
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
+    "npm-run-all": "^4.1.5",
+    "prettier-plugin-solidity": "^1.1.2"
   }
 }

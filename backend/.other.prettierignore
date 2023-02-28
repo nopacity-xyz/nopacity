@@ -1,3 +1,4 @@
+!**/
 artifacts
 cache
 node_modules
@@ -6,3 +7,4 @@ typechain-types
 *.jsx
 *.ts
 *.tsx
+!*.sol
