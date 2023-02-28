@@ -33,9 +33,7 @@ async function main() {
   const token = await MyToken.deploy(governor.address, 'thisISATOKEN', 'LOL')
 
   console.log(
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     `Governor deployed to ${governor.address}`,
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     `Token deployed to ${token.address}`
   )
 }
