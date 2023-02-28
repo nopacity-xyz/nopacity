@@ -1,13 +1,9 @@
 {
   "eslint.workingDirectories": [
-    { "directory": "./backend"},
-    { "directory": "./"},
+    { "directory": "./backend" },
+    { "directory": "./" }
   ],
-  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-  "[solidity]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
@@ -19,5 +15,5 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  },
+  }
 }

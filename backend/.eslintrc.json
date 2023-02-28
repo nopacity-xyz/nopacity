@@ -1,21 +1,21 @@
 {
-	"extends": [
-		"next/core-web-vitals",
-		"standard-kit/prettier",
-		"standard-kit/prettier/jsx",
-		"standard-kit/prettier/typescript",
-		"standard-kit/prettier/node",
-		"standard-kit/prettier/react"
-	],
-	"plugins": ["simple-import-sort"],
-	"parserOptions": {
-		"project": "./tsconfig.json"
-	},
-	"rules": {
-		"@next/next/no-html-link-for-pages": "off",
-		"@typescript-eslint/explicit-function-return-type": "off",
-		"@typescript-eslint/triple-slash-reference": "off",
-		"react/react-in-jsx-scope": "off",
-		"simple-import-sort/imports": "error"
-	}
+  "extends": [
+    "next/core-web-vitals",
+    "standard-kit/prettier",
+    "standard-kit/prettier/jsx",
+    "standard-kit/prettier/typescript",
+    "standard-kit/prettier/node",
+    "standard-kit/prettier/react"
+  ],
+  "plugins": ["simple-import-sort"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "@next/next/no-html-link-for-pages": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/triple-slash-reference": "off",
+    "react/react-in-jsx-scope": "off",
+    "simple-import-sort/imports": "error"
+  }
 }

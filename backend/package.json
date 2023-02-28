@@ -1,23 +1,24 @@
 {
-	"name": "gov",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"build": "hardhat compile",
-		"clean": "rm -rf artifacts cache typechain-types",
-		"fix": "eslint . --fix",
-		"lint": "eslint ."
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"dependencies": {
-		"@openzeppelin/contracts": "^4.8.0",
-		"dotenv": "^16.0.3",
-		"hardhat": "^2.12.6"
-	},
-	"devDependencies": {
-		"@nomicfoundation/hardhat-toolbox": "^2.0.1"
-	}
+  "name": "gov",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "hardhat compile",
+    "clean": "rm -rf artifacts cache typechain-types",
+    "fix": "eslint . --fix && prettier --write .",
+    "lint": "eslint . && prettier -c .",
+    "test": "hardhat test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.0",
+    "dotenv": "^16.0.3",
+    "hardhat": "^2.12.6"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1"
+  }
 }

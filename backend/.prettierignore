@@ -1,0 +1,8 @@
+artifacts
+cache
+node_modules
+typechain-types
+*.js
+*.jsx
+*.ts
+*.tsx
