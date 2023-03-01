@@ -6,6 +6,9 @@ import '@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol
 import '@openzeppelin/contracts/governance/extensions/GovernorVotes.sol';
 import '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol';
 import '@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+
+import './TokenContract.sol';
 
 contract GovernorContractTimeLock is
   Governor,
@@ -15,11 +18,15 @@ contract GovernorContractTimeLock is
   GovernorTimelockControl
 {
   uint256 votingperiod;
+  address public paymentToken;
+
+  uint minAmount = 100e18;
 
   constructor(
     string memory _name,
     IVotes _token,
     TimelockController _timelock,
+    IERC20 _paymentToken,
     uint256 _votingPeriod,
     uint8 _quorumFraction
   )
@@ -29,6 +36,21 @@ contract GovernorContractTimeLock is
     GovernorTimelockControl(_timelock)
   {
     votingperiod = _votingPeriod;
+    paymentToken = address(_paymentToken);
+  }
+
+  function join() external {
+    uint allowance = IERC20(paymentToken).allowance(msg.sender, address(this));
+    require(allowance >= minAmount, 'Must pay the minimum');
+
+    bool success = IERC20(paymentToken).transferFrom(
+      msg.sender,
+      timelock(),
+      minAmount
+    );
+    require(success, 'Failed to transfer ERC20');
+
+    TokenContract(address(token)).safeMint(msg.sender);
   }
 
   function votingDelay() public pure override returns (uint256) {

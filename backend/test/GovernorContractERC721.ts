@@ -1,12 +1,12 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers'
+import { assert, expect } from 'chai'
 import { ethers } from 'hardhat'
 
 const { parseEther } = ethers.utils
 
 describe('Testing of the governor and Token Contract ', function () {
   async function deployFixture() {
-    const [owner, voter1, voter2, voter3, voter4, voter5, voter6] =
-      await ethers.getSigners()
+    const [owner, ...voters] = await ethers.getSigners()
     const daoName = 'ETHSD'
     const votingPeriod = 50400
     const tokenName = 'OurToken'
@@ -14,11 +14,26 @@ describe('Testing of the governor and Token Contract ', function () {
     const minDelay = 172800
     const qourumFraction = 51
 
-    const transactionCountGovernor = await owner.getTransactionCount()
+    //
+    // Test ERC20 Token
+    //
+    const PaymentToken = await ethers.getContractFactory('TestPaymentToken')
+    const paymentToken = await PaymentToken.connect(owner).deploy()
+    await paymentToken.deployed()
+
+    for (let i = 0; i < 5; ++i) {
+      await paymentToken
+        .connect(owner)
+        .transfer(voters[i].address, parseEther('1000'))
+    }
+
+    //
+    // Deploy Timelock
+    //
 
     const futureGovermentAddress = ethers.utils.getContractAddress({
       from: owner.address,
-      nonce: transactionCountGovernor
+      nonce: await owner.getTransactionCount()
     })
 
     const TimeLockContract = await ethers.getContractFactory(
@@ -33,22 +48,15 @@ describe('Testing of the governor and Token Contract ', function () {
       { gasLimit: 30000000 }
     )
 
-    console.log('TIME LOCK: ' + timeLockContract.address)
+    // console.log('TIME LOCK: ' + timeLockContract.address)
 
-    const value = parseEther('500')
-
-    const tx = await owner.sendTransaction({
-      to: timeLockContract.address,
-      value
-    })
-
-    console.log(tx)
-
-    const transactionCount = await owner.getTransactionCount()
+    //
+    // Deploy Governor
+    //
 
     const futureTokenAddress = ethers.utils.getContractAddress({
       from: owner.address,
-      nonce: transactionCount + 1
+      nonce: (await owner.getTransactionCount()) + 1
     })
 
     const GovernorContract = await ethers.getContractFactory(
@@ -58,12 +66,17 @@ describe('Testing of the governor and Token Contract ', function () {
       daoName,
       futureTokenAddress,
       timeLockContract.address,
+      paymentToken.address,
       votingPeriod,
       qourumFraction,
       { gasLimit: 30000000 }
     )
 
-    console.log('GOVERNOR CONTRACT: ' + governorContract.address)
+    // console.log('GOVERNOR CONTRACT: ' + governorContract.address)
+
+    //
+    // Deploy Token
+    //
 
     const TokenContract = await ethers.getContractFactory('TokenContract')
     const tokenContract = await TokenContract.deploy(
@@ -72,62 +85,65 @@ describe('Testing of the governor and Token Contract ', function () {
       tokenSymbol,
       { gasLimit: 30000000 }
     )
+    // Let the owner mint his own NFT
+    await tokenContract.safeMint(owner.address)
+    // Transfer the ownership of the token to the governor contract
+    await tokenContract.transferOwnership(governorContract.address)
 
-    console.log('TOKEN CONTRACT: ' + tokenContract.address)
+    // console.log('TOKEN CONTRACT: ' + tokenContract.address)
 
     return {
+      paymentToken,
       timeLockContract,
       governorContract,
       tokenContract,
       owner,
-      voter1,
-      voter2,
-      voter3,
-      voter4,
-      voter5,
-      voter6
+      voters
     }
   }
 
-  it('should provide the owner with an ERC721 token after they paid', async () => {
+  it('should have a TEST ERC20 token deployed', async () => {
+    const { paymentToken } = await loadFixture(deployFixture)
+
+    const supply = await paymentToken.totalSupply()
+    assert(supply.gt('1'))
+  })
+
+  it('should provide the owner with an ERC721 token after they deploy', async () => {
     const { tokenContract, owner } = await loadFixture(deployFixture)
 
-    const balance = await tokenContract.balanceOf(owner.address)
-    console.log('THE Balance is')
-    console.log(balance)
+    const votersTokenBalance = await tokenContract.balanceOf(owner.address)
+    expect(votersTokenBalance.toString()).equal('1')
   })
 
-  it('should provide the voter with an ERC721 token', async () => {
-    const { tokenContract, voter1 } = await loadFixture(deployFixture)
+  it('voter can join DAO', async () => {
+    const {
+      paymentToken,
+      tokenContract,
+      governorContract,
+      voters: [voter]
+    } = await loadFixture(deployFixture)
 
-    await tokenContract.safeMint(voter1.address)
-    const balance = await tokenContract.balanceOf(voter1.address)
-    console.log('The Balance is')
-    console.log(balance)
+    await paymentToken
+      .connect(voter)
+      .approve(governorContract.address, parseEther('100'))
+
+    await governorContract.connect(voter).join()
+
+    const votersTokenBalance = await tokenContract.balanceOf(voter.address)
+    expect(votersTokenBalance.toString()).equal('1')
   })
 
-  it('Should allow the voter to send money to the dao', async () => {
-    const { timeLockContract, owner } = await loadFixture(deployFixture)
-    const value = parseEther('500')
-    const tx = await owner.sendTransaction({
-      to: timeLockContract.address,
-      value
-    })
-    console.log(tx)
-    const balance = await ethers.provider.getBalance(timeLockContract.address)
-    console.log(balance)
-  })
+  it('voter must pay the minimum to join DAO', async () => {
+    const {
+      governorContract,
+      voters: [voter]
+    } = await loadFixture(deployFixture)
 
-  it('Should allow the voter to send money to the dao', async () => {
-    const { timeLockContract, owner } = await loadFixture(deployFixture)
-    const value = parseEther('500')
-    const tx = await owner.sendTransaction({
-      to: timeLockContract.address,
-      value
-    })
-    console.log(tx)
-    const balance = await ethers.provider.getBalance(timeLockContract.address)
-    console.log(balance)
+    // await usdcTokenContract.approve(governorContract.address, '100')
+    await expect(governorContract.connect(voter).join()).to.revertedWith(
+      'Must pay the minimum'
+    )
   })
 })
 

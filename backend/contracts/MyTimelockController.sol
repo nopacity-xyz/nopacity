@@ -5,6 +5,8 @@ pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/governance/TimelockController.sol';
 
+import './TokenContract.sol';
+
 contract MyTimelockController is TimelockController {
   uint256 minAmount;
 
