@@ -61,6 +61,7 @@ export default function NavBar({
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const handleLogIn = async () => {
+    // NOT SURE HOW TO GET THE BELOW TO WORK
     // @ts-expect-error
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const res = await provider.send('eth_requestAccounts', [])
@@ -92,9 +93,10 @@ export default function NavBar({
           />
           <HStack spacing={8} alignItems="center">
             <Image
-              src="https://i.imgur.com/Bd90yaN.png"
+              src="https://i.imgur.com/3dVHFRu.png"
               boxSize="50px"
               objectFit="cover"
+              alt="Nopacity Logo"
             />
             <HStack
               as="nav"
@@ -107,7 +109,8 @@ export default function NavBar({
               <Button
                 onClick={handleLogIn}
                 variant="solid"
-                colorScheme="red"
+                backgroundColor="#7BD1EC"
+                color="white"
                 size="sm"
                 mr={4}
               >
