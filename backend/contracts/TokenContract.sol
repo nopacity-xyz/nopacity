@@ -12,6 +12,5 @@ contract TokenContract is TokenContractERC721 {
     governor = _governor;
   }
 
-
-  
+  function canMint(address _user) public {}
 }

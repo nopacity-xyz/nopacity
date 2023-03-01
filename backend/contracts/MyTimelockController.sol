@@ -5,6 +5,11 @@ pragma solidity ^0.8.0;
 
 import './TimelockController.sol';
 
+interface TokenContract{
+    
+
+}
+
 contract MyTimelockController is TimelockController {
   uint256 minAmount;
 
@@ -20,7 +25,6 @@ contract MyTimelockController is TimelockController {
 
   function joinDao(address _user) external payable {
     require(msg.value >= minAmount);
-
 
 
   }
