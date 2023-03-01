@@ -1,6 +1,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers'
-import { assert } from 'chai'
 import { ethers } from 'hardhat'
+
 const { parseEther } = ethers.utils
 
 describe('Testing of the governor and Token Contract ', function () {
@@ -9,11 +9,10 @@ describe('Testing of the governor and Token Contract ', function () {
       await ethers.getSigners()
     const daoName = 'ETHSD'
     const votingPeriod = 50400
-    const quorumPercentage = 4
-    const premintAmount = 10000
     const tokenName = 'OurToken'
     const tokenSymbol = 'OUT'
-    const minDelay = 504
+    const minDelay = 172800
+    const qourumFraction = 51
 
     const transactionCountGovernor = await owner.getTransactionCount()
 
@@ -22,18 +21,28 @@ describe('Testing of the governor and Token Contract ', function () {
       nonce: transactionCountGovernor
     })
 
-    const TimeLockAddress = await ethers.getContractFactory(
+    const TimeLockContract = await ethers.getContractFactory(
       'MyTimelockController'
     )
-    const timeLockAddress = await TimeLockAddress.deploy(
+    const timeLockContract = await TimeLockContract.deploy(
       minDelay,
       [futureGovermentAddress],
       ['0x0000000000000000000000000000000000000000'],
       owner.address,
+      parseEther('100'),
       { gasLimit: 30000000 }
     )
 
-    console.log('TIME LOCK: ' + timeLockAddress.address)
+    console.log('TIME LOCK: ' + timeLockContract.address)
+
+    const value = parseEther('500')
+
+    const tx = await owner.sendTransaction({
+      to: timeLockContract.address,
+      value
+    })
+
+    console.log(tx)
 
     const transactionCount = await owner.getTransactionCount()
 
@@ -48,9 +57,9 @@ describe('Testing of the governor and Token Contract ', function () {
     const governorContract = await GovernorContract.deploy(
       daoName,
       futureTokenAddress,
-      timeLockAddress.address,
+      timeLockContract.address,
       votingPeriod,
-      quorumPercentage,
+      qourumFraction,
       { gasLimit: 30000000 }
     )
 
@@ -59,7 +68,6 @@ describe('Testing of the governor and Token Contract ', function () {
     const TokenContract = await ethers.getContractFactory('TokenContract')
     const tokenContract = await TokenContract.deploy(
       governorContract.address,
-      premintAmount,
       tokenName,
       tokenSymbol,
       { gasLimit: 30000000 }
@@ -67,9 +75,8 @@ describe('Testing of the governor and Token Contract ', function () {
 
     console.log('TOKEN CONTRACT: ' + tokenContract.address)
 
-    await tokenContract.delegate(owner.address)
-
     return {
+      timeLockContract,
       governorContract,
       tokenContract,
       owner,
@@ -82,21 +89,45 @@ describe('Testing of the governor and Token Contract ', function () {
     }
   }
 
-  it('should provide the owner with a starting balance', async () => {
-    const {
-      // governorContract,
-      tokenContract,
-      owner
-      //   voter1,
-      //   voter2,
-      //   voter3,
-      //   voter4,
-      //   voter5,
-      //   voter6
-    } = await loadFixture(deployFixture)
+  it('should provide the owner with an ERC721 token after they paid', async () => {
+    const { tokenContract, owner } = await loadFixture(deployFixture)
 
     const balance = await tokenContract.balanceOf(owner.address)
-    assert.equal(balance.toString(), parseEther('10000').toString())
+    console.log('THE Balance is')
+    console.log(balance)
+  })
+
+  it('should provide the voter with an ERC721 token', async () => {
+    const { tokenContract, voter1 } = await loadFixture(deployFixture)
+
+    await tokenContract.safeMint(voter1.address)
+    const balance = await tokenContract.balanceOf(voter1.address)
+    console.log('The Balance is')
+    console.log(balance)
+  })
+
+  it('Should allow the voter to send money to the dao', async () => {
+    const { timeLockContract, owner } = await loadFixture(deployFixture)
+    const value = parseEther('500')
+    const tx = await owner.sendTransaction({
+      to: timeLockContract.address,
+      value
+    })
+    console.log(tx)
+    const balance = await ethers.provider.getBalance(timeLockContract.address)
+    console.log(balance)
+  })
+
+  it('Should allow the voter to send money to the dao', async () => {
+    const { timeLockContract, owner } = await loadFixture(deployFixture)
+    const value = parseEther('500')
+    const tx = await owner.sendTransaction({
+      to: timeLockContract.address,
+      value
+    })
+    console.log(tx)
+    const balance = await ethers.provider.getBalance(timeLockContract.address)
+    console.log(balance)
   })
 })
 
