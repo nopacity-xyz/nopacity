@@ -16,8 +16,10 @@ import {
   useColorModeValue,
   useDisclosure
 } from '@chakra-ui/react'
+
 // import { ethers } from 'ethers'
-import { useCallback, useEffect } from 'react'
+import { useDispatch } from '@/hooks/useDispatch'
+import { useSelector } from '@/hooks/useSelector'
 
 import Blockie from './Blockie'
 
@@ -41,28 +43,17 @@ const NavLink = ({ children }: NavLinkProps) => (
   </Link>
 )
 
-interface NavBarProps {
-  loggedIn: boolean
-  setLoggedIn: {
-    on: () => void
-    off: () => void
-    toggle: () => void
-  }
-  user: string
-  setUser: (address: string) => void
-}
-
-export default function NavBar({
-  loggedIn,
-  setLoggedIn,
-  user,
-  setUser
-}: NavBarProps) {
+export default function NavBar() {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const isAuth = useSelector(state => state.isAuth)
+  const user = useSelector(state => state.user)
+  const dispatch = useDispatch()
 
   const handleLogIn = async () => {
-    setLoggedIn.on()
-    setUser('abc')
+    dispatch({ type: 'login', user: 'abc' })
+
+    // setLoggedIn.on()
+    // setUser('abc')
     // // NOT SURE HOW TO GET THE BELOW TO WORK
     // // @ts-expect-error
     // const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -73,13 +64,13 @@ export default function NavBar({
     // }
   }
 
-  const handleLogOut = useCallback(async () => {
-    setLoggedIn.off()
-  }, [setLoggedIn])
+  const handleLogOut = async () => {
+    dispatch({ type: 'logout' })
+  }
 
-  useEffect(() => {
-    handleLogOut().catch(err => console.error(err))
-  }, [handleLogOut])
+  // useEffect(() => {
+  //   handleLogOut().catch(err => console.error(err))
+  // }, [handleLogOut])
 
   return (
     <Box
@@ -119,7 +110,7 @@ export default function NavBar({
           <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }} />
         </HStack>
         <Flex alignItems="center">
-          {!loggedIn ? (
+          {!isAuth ? (
             <Button
               onClick={handleLogIn}
               variant="solid"
@@ -133,7 +124,7 @@ export default function NavBar({
           ) : (
             <Menu>
               <MenuButton as={Button} variant="link" cursor="pointer" minW={0}>
-                <Blockie address={user} />
+                <Blockie address={user ?? ''} />
               </MenuButton>
               <MenuList>
                 {/* <MenuItem onClick={getUserTokenBalance}>My Tokens</MenuItem> */}

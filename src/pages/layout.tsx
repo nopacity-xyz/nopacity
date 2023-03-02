@@ -1,5 +1,4 @@
-import { Box, useBoolean } from '@chakra-ui/react'
-import { useState } from 'react'
+import { Box } from '@chakra-ui/react'
 
 import NavBar from '@/components/Navigation/NavBar'
 
@@ -8,9 +7,6 @@ interface Props {
 }
 
 export default function Layout({ children }: Props) {
-  const [loggedIn, setLoggedIn] = useBoolean()
-  const [user, setUser] = useState('')
-
   return (
     <Box
       w="100%"
@@ -20,12 +16,7 @@ export default function Layout({ children }: Props) {
       minHeight="100vh"
     >
       <Box maxWidth={1080} m="auto" position="relative">
-        <NavBar
-          loggedIn={loggedIn}
-          setLoggedIn={setLoggedIn}
-          user={user}
-          setUser={setUser}
-        />
+        <NavBar />
         <div>{children}</div>
       </Box>
     </Box>
