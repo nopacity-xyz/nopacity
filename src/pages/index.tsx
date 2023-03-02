@@ -1,4 +1,4 @@
-import { Box, Button, Heading, useBoolean } from '@chakra-ui/react'
+import { Box, Button, Container, Heading, useBoolean } from '@chakra-ui/react'
 // import { Alchemy, Network, Utils } from 'alchemy-sdk'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import Head from 'next/head'
@@ -31,7 +31,7 @@ export default function Home() {
       <Box w="100%" h="100%" bgGradient="linear(to-l, #7928CA, #FF0080)">
         <main className={styles.main}>
           <div className={styles.description}>
-            <Box
+            <Container
               borderWidth="1px"
               rounded="lg"
               shadow="1px 1px 3px rgba(0,0,0,0.3)"
@@ -69,7 +69,7 @@ export default function Home() {
               <Link href="/create-organization">
                 <Button colorScheme="blue">Create a business</Button>
               </Link>
-            </Box>
+            </Container>
           </div>
         </main>
       </Box>
