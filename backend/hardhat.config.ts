@@ -1,4 +1,5 @@
 import '@nomicfoundation/hardhat-toolbox'
+import 'hardhat-watcher'
 
 import { HardhatUserConfig } from 'hardhat/config'
 
@@ -10,6 +11,15 @@ const config: HardhatUserConfig = {
         enabled: true,
         runs: 1
       }
+    }
+  },
+  watcher: {
+    test: {
+      tasks: [{ command: 'test', params: { testFiles: ['{path}'] } }],
+      files: ['./test/**/*'],
+      verbose: true,
+      clearOnStart: true,
+      start: 'echo Running my test task now..'
     }
   }
 }

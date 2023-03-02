@@ -12,7 +12,8 @@
     "lint": "npm-run-all -p lint.es lint.other",
     "lint.es": "eslint .",
     "lint.other": "prettier --ignore-path .other.prettierignore -c .",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "test.dev": "hardhat watch test"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +21,8 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.0",
     "dotenv": "^16.0.3",
-    "hardhat": "^2.12.6"
+    "hardhat": "^2.12.6",
+    "hardhat-watcher": "^2.5.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.1",
