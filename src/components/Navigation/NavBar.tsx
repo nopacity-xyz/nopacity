@@ -98,6 +98,13 @@ export default function NavBar({
               objectFit="cover"
               alt="Nopacity Logo"
             />
+            {/* <Image
+              src="https://i.imgur.com/LHIXA73.png"
+              // boxSize="50px"
+              height="50px"
+              objectFit="cover"
+              alt="Nopacity Logo"
+            /> */}
             <HStack
               as="nav"
               spacing={4}
