@@ -35,6 +35,8 @@ import {
 } from '@chakra-ui/react'
 import React, { ChangeEvent, useState } from 'react'
 
+import Layout from '../layout'
+
 // interface DAOConfigData {
 //   token: {
 //     tokenName: string
@@ -48,78 +50,6 @@ import React, { ChangeEvent, useState } from 'react'
 //     quorumFraction: number
 //   }
 // }
-
-// const Form2 = () => {
-//   return (
-//   )
-// }
-
-const Form3 = () => {
-  return (
-    <>
-      <Heading w="100%" textAlign="center" fontWeight="normal">
-        Social Handles
-      </Heading>
-      <SimpleGrid columns={1} spacing={6}>
-        <FormControl as={GridItem} colSpan={[3, 2]}>
-          <FormLabel
-            fontSize="sm"
-            fontWeight="md"
-            color="gray.700"
-            _dark={{
-              color: 'gray.50'
-            }}
-          >
-            Website
-          </FormLabel>
-          <InputGroup size="sm">
-            <InputLeftAddon
-              bg="gray.50"
-              _dark={{
-                bg: 'gray.800'
-              }}
-              color="gray.500"
-              rounded="md"
-            >
-              http://
-            </InputLeftAddon>
-            <Input
-              type="tel"
-              placeholder="www.example.com"
-              focusBorderColor="brand.400"
-              rounded="md"
-            />
-          </InputGroup>
-        </FormControl>
-
-        <FormControl id="email" mt={1}>
-          <FormLabel
-            fontSize="sm"
-            fontWeight="md"
-            color="gray.700"
-            _dark={{
-              color: 'gray.50'
-            }}
-          >
-            About
-          </FormLabel>
-          <Textarea
-            placeholder="you@example.com"
-            rows={3}
-            shadow="sm"
-            focusBorderColor="brand.400"
-            fontSize={{
-              sm: 'sm'
-            }}
-          />
-          <FormHelperText>
-            Brief description for your profile. URLs are hyperlinked.
-          </FormHelperText>
-        </FormControl>
-      </SimpleGrid>
-    </>
-  )
-}
 
 export default function CreateOrganization() {
   const toast = useToast()
@@ -169,7 +99,7 @@ export default function CreateOrganization() {
   }
 
   return (
-    <>
+    <Layout>
       <Box
         borderWidth="1px"
         rounded="lg"
@@ -418,7 +348,68 @@ export default function CreateOrganization() {
             </FormControl>
           </>
         ) : (
-          <Form3 />
+          <>
+            <Heading w="100%" textAlign="center" fontWeight="normal">
+              Social Handles
+            </Heading>
+            <SimpleGrid columns={1} spacing={6}>
+              <FormControl as={GridItem} colSpan={[3, 2]}>
+                <FormLabel
+                  fontSize="sm"
+                  fontWeight="md"
+                  color="gray.700"
+                  _dark={{
+                    color: 'gray.50'
+                  }}
+                >
+                  Website
+                </FormLabel>
+                <InputGroup size="sm">
+                  <InputLeftAddon
+                    bg="gray.50"
+                    _dark={{
+                      bg: 'gray.800'
+                    }}
+                    color="gray.500"
+                    rounded="md"
+                  >
+                    http://
+                  </InputLeftAddon>
+                  <Input
+                    type="tel"
+                    placeholder="www.example.com"
+                    focusBorderColor="brand.400"
+                    rounded="md"
+                  />
+                </InputGroup>
+              </FormControl>
+
+              <FormControl id="email" mt={1}>
+                <FormLabel
+                  fontSize="sm"
+                  fontWeight="md"
+                  color="gray.700"
+                  _dark={{
+                    color: 'gray.50'
+                  }}
+                >
+                  About
+                </FormLabel>
+                <Textarea
+                  placeholder="you@example.com"
+                  rows={3}
+                  shadow="sm"
+                  focusBorderColor="brand.400"
+                  fontSize={{
+                    sm: 'sm'
+                  }}
+                />
+                <FormHelperText>
+                  Brief description for your profile. URLs are hyperlinked.
+                </FormHelperText>
+              </FormControl>
+            </SimpleGrid>
+          </>
         )}
         <ButtonGroup mt="5%" w="100%">
           <Flex w="100%" justifyContent="space-between">
@@ -476,6 +467,6 @@ export default function CreateOrganization() {
           </Flex>
         </ButtonGroup>
       </Box>
-    </>
+    </Layout>
   )
 }

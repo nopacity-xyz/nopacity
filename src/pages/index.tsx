@@ -1,34 +1,25 @@
-import { Box, Button, Container, Heading, useBoolean } from '@chakra-ui/react'
+import { Box, Button, Container, Heading } from '@chakra-ui/react'
 // import { Alchemy, Network, Utils } from 'alchemy-sdk'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState } from 'react'
 
-import NavBar from '@/components/Navigation/NavBar'
 import styles from '@/styles/Home.module.css'
+
+import Layout from './layout'
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'] })
 
 export default function Home() {
-  const [loggedIn, setLoggedIn] = useBoolean()
-  const [user, setUser] = useState('')
-
   return (
-    <>
+    <Layout>
       <Head>
         <title>Nopacity</title>
         <meta name="description" content="Create a DAO in 2 clicks." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <NavBar
-        loggedIn={loggedIn}
-        setLoggedIn={setLoggedIn}
-        user={user}
-        setUser={setUser}
-      />
-      <Box w="100%" h="100%" bgGradient="linear(to-l, #7928CA, #FF0080)">
+      <Box>
         <main className={styles.main}>
           <div className={styles.description}>
             <Container
@@ -73,6 +64,6 @@ export default function Home() {
           </div>
         </main>
       </Box>
-    </>
+    </Layout>
   )
 }
