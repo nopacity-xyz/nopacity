@@ -16,8 +16,9 @@ import {
   useColorModeValue,
   useDisclosure
 } from '@chakra-ui/react'
+import { Magic } from 'magic-sdk'
+import { useEffect, useState } from 'react'
 
-// import { ethers } from 'ethers'
 import { useDispatch } from '@/hooks/useDispatch'
 import { useSelector } from '@/hooks/useSelector'
 
@@ -48,29 +49,40 @@ export default function NavBar() {
   const isAuth = useSelector(state => state.isAuth)
   const user = useSelector(state => state.user)
   const dispatch = useDispatch()
+  const [magic, setMagic] = useState<Magic>()
+
+  useEffect(() => {
+    const magic = new Magic('pk_live_1E208ADDCC61B99E', {
+      network: 'goerli'
+    })
+    setMagic(magic)
+
+    if (user != null) {
+      magic.wallet.connectWithUI().catch(err => {
+        console.error(err)
+        dispatch({ type: 'logout' })
+      })
+    }
+  }, [dispatch, user])
 
   const handleLogIn = async () => {
-    dispatch({ type: 'login', user: 'abc' })
-
-    // setLoggedIn.on()
-    // setUser('abc')
-    // // NOT SURE HOW TO GET THE BELOW TO WORK
-    // // @ts-expect-error
-    // const provider = new ethers.providers.Web3Provider(window.ethereum)
-    // const res = await provider.send('eth_requestAccounts', [])
-    // if (res != null) {
-    //   setLoggedIn.on()
-    //   setUser(res[0])
-    // }
+    if (magic == null) return
+    const accounts = await magic.wallet.connectWithUI().catch(console.error)
+    dispatch({ type: 'login', user: accounts[0] })
   }
 
   const handleLogOut = async () => {
-    dispatch({ type: 'logout' })
+    if (magic == null) return
+    const success = await magic.wallet.disconnect().catch(console.error)
+    if (success) {
+      dispatch({ type: 'logout' })
+    }
   }
 
-  // useEffect(() => {
-  //   handleLogOut().catch(err => console.error(err))
-  // }, [handleLogOut])
+  const handleClickWallet = async () => {
+    if (magic == null) return
+    await magic.wallet.showUI().catch(console.error)
+  }
 
   return (
     <Box
@@ -127,6 +139,8 @@ export default function NavBar() {
                 <Blockie address={user ?? ''} />
               </MenuButton>
               <MenuList>
+                <MenuDivider />
+                <MenuItem onClick={handleClickWallet}>My Wallet</MenuItem>
                 {/* <MenuItem onClick={getUserTokenBalance}>My Tokens</MenuItem> */}
                 <MenuDivider />
                 <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
