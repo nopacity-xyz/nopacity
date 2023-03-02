@@ -37,21 +37,21 @@ import React, { ChangeEvent, useState } from 'react'
 
 import Layout from '../layout'
 
-// interface DAOConfigData {
+// interface GroupConfigData {
 //   token: {
 //     tokenName: string
 //     tokenSymbol: string
 //   }
 //   governor: {
-//     daoName: string
-//     daoDescription: string
+//     groupName: string
+//     groupDescription: string
 //     votingQuantity: number
 //     votingPeriod: string
 //     quorumFraction: number
 //   }
 // }
 
-export default function CreateOrganization() {
+export default function CreateGroup() {
   const toast = useToast()
   const [step, setStep] = useState(1)
   const [progress, setProgress] = useState(33.33)
@@ -59,14 +59,14 @@ export default function CreateOrganization() {
   const { isOpen, onToggle } = useDisclosure()
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [DAOData, setDAOData] = useState({
+  const [GroupData, setGroupData] = useState({
     token: {
       tokenName: '',
       tokenSymbol: ''
     },
     governor: {
-      daoName: '',
-      daoDescription: '',
+      groupName: '',
+      groupDescription: '',
       votingQuantity: 1,
       votingPeriod: 'days',
       quorumFraction: 51
@@ -77,20 +77,20 @@ export default function CreateOrganization() {
   const handleSubmit = async (e: Event) => {
     e.preventDefault()
 
-    console.log(JSON.stringify(DAOData))
+    console.log(JSON.stringify(GroupData))
     setDeploying(true)
     await fetch('/api/deploy', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(DAOData)
+      body: JSON.stringify(GroupData)
     }).then(() => {
       setDeploying(false)
       setStep(3)
       toast({
         title: 'Account created.',
-        description: 'Company Deployed! 🎉',
+        description: 'Group Deployed! 🎉',
         status: 'success',
         duration: 3000,
         isClosable: true
@@ -120,58 +120,58 @@ export default function CreateOrganization() {
         {step === 1 ? (
           // FORM #1
           <>
-            {/* COMPANY CONFIG */}
+            {/* GROUP CONFIG */}
             <Heading w="100%" textAlign="left" fontWeight="normal" mb="2%">
-              Configure Company
+              Configure Group
             </Heading>
             <Flex>
-              {/* DAO NAME */}
+              {/* GROUP NAME */}
               <FormControl mr="5%" isRequired>
                 <Flex>
-                  <FormLabel fontWeight="normal">Company Name</FormLabel>
+                  <FormLabel fontWeight="normal">Group Name</FormLabel>
                   <Tooltip label="What's the name?">
                     <QuestionIcon />
                   </Tooltip>
                 </Flex>
                 <Input
-                  id="dao-name"
+                  id="group-name"
                   placeholder="The Muffin Man"
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    setDAOData(prevState => ({
+                    setGroupData(prevState => ({
                       ...prevState,
                       governor: {
                         // copy all other key-value pairs of food object
                         ...prevState.governor,
-                        daoName: e.target.value
+                        groupName: e.target.value
                       }
                     }))
                   }}
-                  value={DAOData.governor.daoName}
+                  value={GroupData.governor.groupName}
                 />
               </FormControl>
-              {/* DAO DESCRIPTION */}
+              {/* GROUP DESCRIPTION */}
               <FormControl isRequired>
                 <Flex>
-                  <FormLabel fontWeight="normal">Company Description</FormLabel>
-                  <Tooltip label="What's the purpose of your organization?">
+                  <FormLabel fontWeight="normal">Group Description</FormLabel>
+                  <Tooltip label="What's the purpose of your group?">
                     <QuestionIcon />
                   </Tooltip>
                 </Flex>
                 <Textarea
-                  id="dao-description"
+                  id="group-description"
                   placeholder="The one on Drury Lane"
                   rows={2}
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-                    setDAOData(prevState => ({
+                    setGroupData(prevState => ({
                       ...prevState,
                       governor: {
                         // copy all other key-value pairs of food object
                         ...prevState.governor,
-                        daoDescription: e.target.value
+                        groupDescription: e.target.value
                       }
                     }))
                   }}
-                  value={DAOData.governor.daoDescription}
+                  value={GroupData.governor.groupDescription}
                 />
               </FormControl>
             </Flex>
@@ -195,7 +195,7 @@ export default function CreateOrganization() {
                     size="md"
                     clampValueOnBlur={false}
                     onChange={(e: string) => {
-                      setDAOData(prevState => ({
+                      setGroupData(prevState => ({
                         ...prevState,
                         governor: {
                           // copy all other key-value pairs of food object
@@ -204,7 +204,7 @@ export default function CreateOrganization() {
                         }
                       }))
                     }}
-                    value={DAOData.governor.votingQuantity}
+                    value={GroupData.governor.votingQuantity}
                   >
                     <NumberInputField />
                     <NumberInputStepper>
@@ -223,7 +223,7 @@ export default function CreateOrganization() {
                     // placeholder="weeks"
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       console.log(e.target.value)
-                      setDAOData(prevState => ({
+                      setGroupData(prevState => ({
                         ...prevState,
                         governor: {
                           // copy all other key-value pairs of food object
@@ -231,9 +231,9 @@ export default function CreateOrganization() {
                           votingPeriod: e.target.value
                         }
                       }))
-                      console.log(DAOData.governor.votingPeriod)
+                      console.log(GroupData.governor.votingPeriod)
                     }}
-                    value={DAOData.governor.votingPeriod}
+                    value={GroupData.governor.votingPeriod}
                   >
                     <option value="weeks">weeks</option>
                     <option value="days">days</option>
@@ -262,7 +262,7 @@ export default function CreateOrganization() {
                   <FormControl isRequired>
                     <Flex>
                       <FormLabel fontWeight="normal">Pass %</FormLabel>
-                      <Tooltip label="What percentage of the voters in your organization need to agree with your idea for it to pass?">
+                      <Tooltip label="What percentage of the voters in your group need to agree with your idea for it to pass?">
                         <QuestionIcon />
                       </Tooltip>
                     </Flex>
@@ -273,7 +273,7 @@ export default function CreateOrganization() {
                       size="md"
                       clampValueOnBlur={false}
                       onChange={(e: string) => {
-                        setDAOData(prevState => ({
+                        setGroupData(prevState => ({
                           ...prevState,
                           governor: {
                             // copy all other key-value pairs of food object
@@ -282,7 +282,7 @@ export default function CreateOrganization() {
                           }
                         }))
                       }}
-                      value={DAOData.governor.quorumFraction}
+                      value={GroupData.governor.quorumFraction}
                     >
                       <NumberInputField />
                       <NumberInputStepper>
@@ -304,25 +304,25 @@ export default function CreateOrganization() {
             <FormControl as={GridItem} colSpan={[6, 3]}>
               <Card>
                 <CardHeader>
-                  <Heading size="md">Company Data</Heading>
+                  <Heading size="md">Group Data</Heading>
                 </CardHeader>
 
                 <CardBody>
                   <Stack divider={<StackDivider />} spacing="4">
                     <Box>
                       <Heading size="xs" textTransform="uppercase">
-                        Company Name
+                        Group Name
                       </Heading>
                       <Text pt="2" fontSize="sm">
-                        {DAOData.governor.daoName}
+                        {GroupData.governor.groupName}
                       </Text>
                     </Box>
                     <Box>
                       <Heading size="xs" textTransform="uppercase">
-                        Company Description
+                        Group Description
                       </Heading>
                       <Text pt="2" fontSize="sm">
-                        {DAOData.governor.daoDescription}
+                        {GroupData.governor.groupDescription}
                       </Text>
                     </Box>
                     <Box>
@@ -330,8 +330,8 @@ export default function CreateOrganization() {
                         Voting Period
                       </Heading>
                       <Text pt="2" fontSize="sm">
-                        {DAOData.governor.votingQuantity}{' '}
-                        {DAOData.governor.votingPeriod}
+                        {GroupData.governor.votingQuantity}{' '}
+                        {GroupData.governor.votingPeriod}
                       </Text>
                     </Box>
                     <Box>
@@ -339,7 +339,7 @@ export default function CreateOrganization() {
                         Pass %
                       </Heading>
                       <Text pt="2" fontSize="sm">
-                        {DAOData.governor.quorumFraction}
+                        {GroupData.governor.quorumFraction}
                       </Text>
                     </Box>
                   </Stack>
@@ -435,7 +435,7 @@ export default function CreateOrganization() {
                   onClick={() => {
                     toast({
                       title: 'Account created.',
-                      description: 'Company Deployed! 🎉',
+                      description: 'Group Deployed! 🎉',
                       status: 'success',
                       duration: 3000,
                       isClosable: true

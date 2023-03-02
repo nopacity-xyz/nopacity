@@ -131,7 +131,7 @@ export default function NavBar() {
               size="sm"
               mr={4}
             >
-              Connect Wallet
+              Log In
             </Button>
           ) : (
             <Menu>
@@ -140,7 +140,7 @@ export default function NavBar() {
               </MenuButton>
               <MenuList>
                 <MenuDivider />
-                <MenuItem onClick={handleClickWallet}>My Wallet</MenuItem>
+                <MenuItem onClick={handleClickWallet}>My Profile</MenuItem>
                 {/* <MenuItem onClick={getUserTokenBalance}>My Tokens</MenuItem> */}
                 <MenuDivider />
                 <MenuItem onClick={handleLogOut}>Log Out</MenuItem>

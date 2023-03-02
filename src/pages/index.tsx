@@ -15,7 +15,7 @@ export default function Home() {
     <Layout>
       <Head>
         <title>Nopacity</title>
-        <meta name="description" content="Create a DAO in 2 clicks." />
+        <meta name="description" content="Create a Group in 2 clicks." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -57,8 +57,8 @@ export default function Home() {
               >
                 (not the other way around)
               </Heading>
-              <Link href="/create-organization">
-                <Button colorScheme="blue">Create a business</Button>
+              <Link href="/create-group">
+                <Button colorScheme="blue">Create a group</Button>
               </Link>
             </Container>
           </div>
