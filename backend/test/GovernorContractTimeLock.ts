@@ -112,7 +112,9 @@ describe('Testing of the governor and Token Contract ', function () {
   it('should provide the owner with an ERC721 token after they deploy', async () => {
     const { tokenContract, owner } = await loadFixture(deployFixture)
 
-    const votersTokenBalance = await tokenContract.balanceOf(owner.address)
+    const votersTokenBalance = await tokenContract
+      .connect(owner)
+      .balanceOf(owner.address)
     expect(votersTokenBalance.toString()).equal('1')
   })
 
