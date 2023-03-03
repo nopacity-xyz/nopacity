@@ -99,22 +99,15 @@ async function main() {
   console.log('Time Lock: ' + timeLockContract.address)
   console.log('Governor Contract: ' + governorContract.address)
 
-  await hre.tenderly.persistArtifacts({
-    name: 'TestPaymentToken',
-    address: paymentToken.address
-  })
-  await hre.tenderly.persistArtifacts({
-    name: 'TokenContract',
-    address: tokenContract.address
-  })
-  await hre.tenderly.persistArtifacts({
-    name: 'MyTimelockController',
-    address: timeLockContract.address
-  })
-  await hre.tenderly.persistArtifacts({
-    name: 'GroupGovernor',
-    address: governorContract.address
-  })
+  await hre.tenderly.persistArtifacts(
+    {
+      name: 'TestPaymentToken',
+      address: paymentToken.address
+    },
+    { name: 'TokenContract', address: tokenContract.address },
+    { name: 'MyTimelockController', address: timeLockContract.address },
+    { name: 'GroupGovernor', address: governorContract.address }
+  )
 }
 
 main().catch(error => {
