@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google'
 import Head from 'next/head'
 import Link from 'next/link'
 
+import DynamicBackground from '@/pages/bg'
 import styles from '@/styles/Home.module.css'
 
 import Layout from './layout'
@@ -22,6 +23,7 @@ export default function Home() {
       <Box>
         <main className={styles.main}>
           <div className={styles.description}>
+            <DynamicBackground />
             <Container
               borderWidth="1px"
               rounded="lg"
