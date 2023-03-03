@@ -7,8 +7,6 @@ import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
-import 'hardhat/console.sol';
-
 contract TokenContract is ERC721, Ownable, EIP712, ERC721Votes {
   using Counters for Counters.Counter;
 
@@ -24,11 +22,9 @@ contract TokenContract is ERC721, Ownable, EIP712, ERC721Votes {
   }
 
   function safeMint(address to) public onlyOwner {
-    console.log('minting token for %2', to);
     uint256 tokenId = _tokenIdCounter.current();
     _tokenIdCounter.increment();
     _safeMint(to, tokenId);
-    console.log('delegating to %s', to);
     _delegate(to, to);
   }
 

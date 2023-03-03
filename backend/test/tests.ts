@@ -93,11 +93,12 @@ describe('Testing of the governor and Token Contract ', function () {
     // Transfer the ownership of the token to the governor contract
     await tokenContract.transferOwnership(governorContract.address)
 
-    console.log('Owner:', owner.address)
-    console.log('Voter:', voters[0].address)
-    console.log('Token Contract: ' + tokenContract.address)
-    console.log('Time Lock: ' + timeLockContract.address)
-    console.log('Governor Contract: ' + governorContract.address)
+    // Debugging Logs:
+    // console.log('Owner:', owner.address)
+    // console.log('Voter:', voters[0].address)
+    // console.log('Token Contract: ' + tokenContract.address)
+    // console.log('Time Lock: ' + timeLockContract.address)
+    // console.log('Governor Contract: ' + governorContract.address)
 
     return {
       paymentToken,
@@ -162,12 +163,14 @@ describe('Testing of the governor and Token Contract ', function () {
             const receipt = await tx.wait()
             const event = (receipt.events ?? [])[0]
 
+            // Typescript type assertions:
             if (event == null) throw new Error('Expected event')
             if (event.eventSignature == null)
               throw new Error('Expected event signature')
             if (event.data == null) throw new Error('Expected event data')
             if (event.decode == null) throw new Error('Expected event decode')
 
+            // Get proposalId
             const eventData = event.decode(event.data, event.topics)
             const proposalId = eventData.proposalId
 
