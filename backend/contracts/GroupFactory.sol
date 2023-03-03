@@ -26,7 +26,7 @@ contract GroupFactory {
     IERC20 _paymentToken,
     uint256 _votingPeriod,
     uint8 _quorumFraction
-  ) external {
+  ) external returns (address) {
     GroupGovernor governor = new GroupGovernor(
       _name,
       _token,
@@ -44,5 +44,7 @@ contract GroupFactory {
     });
     groups.push(group);
     ++groupCount;
+
+    return address(governor);
   }
 }
