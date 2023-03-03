@@ -3,6 +3,7 @@ artifacts
 cache
 node_modules
 typechain-types
+deployments
 *.js
 *.jsx
 *.ts

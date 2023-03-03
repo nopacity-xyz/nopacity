@@ -1,3 +1,4 @@
+import '@tenderly/hardhat-tenderly'
 import '@nomicfoundation/hardhat-toolbox'
 import 'hardhat-watcher'
 
