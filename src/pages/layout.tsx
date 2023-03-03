@@ -17,7 +17,9 @@ export default function Layout({ children }: Props) {
     >
       <Box maxWidth={1080} m="auto" position="relative">
         <NavBar />
-        <div>{children}</div>
+        <Box m="5%" mt="0px" mb="0px">
+          {children}
+        </Box>
       </Box>
     </Box>
   )

@@ -1,5 +1,6 @@
 import { Box, Heading, Stack, Text } from '@chakra-ui/react'
 
+import Proposals from '@/pages/g/[groupAddress]/Proposals'
 import Layout from '@/pages/layout'
 import styles from '@/styles/Home.module.css'
 export default function Group({
@@ -42,6 +43,7 @@ export default function Group({
                   >
                     GroupDescription Goes Here
                   </Text>
+                  <Proposals />
                 </Stack>
               </Box>
             </div>
