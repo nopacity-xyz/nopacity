@@ -60,9 +60,7 @@ describe('Testing of the governor and Token Contract ', function () {
       nonce: (await owner.getTransactionCount()) + 1
     })
 
-    const GovernorContract = await ethers.getContractFactory(
-      'GovernorContractTimeLock'
-    )
+    const GovernorContract = await ethers.getContractFactory('GroupGovernor')
     const governorContract = await GovernorContract.deploy(
       daoName,
       futureTokenAddress,

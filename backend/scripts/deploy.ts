@@ -20,7 +20,7 @@ async function main() {
   // Fraction is in percentages (10 means 10%, etc)
   const quorumFraction = 50
 
-  const MyGovernor = await ethers.getContractFactory('GovernorContractTimeLock')
+  const MyGovernor = await ethers.getContractFactory('GroupGovernor')
   const governor = await MyGovernor.deploy(
     'Lil Dao Wow',
     futureTokenAddress,

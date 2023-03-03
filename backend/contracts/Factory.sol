@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import './GovernorContractTimeLock.sol';
-import './MyTimelockController.sol';
-import './TokenContract.sol';
+import '@openzeppelin/contracts/governance/extensions/GovernorVotes.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
+import './GroupGovernor.sol';
+import './MyTimelockController.sol';
+import './TokenContract.sol';
+
 contract Factory {
-  GovernorContractTimeLock _governor;
+  GroupGovernor _governor;
   MyTimelockController _timeLock;
   TokenContract _token;
 
-  GovernorContractTimeLock[] public list_of_governors;
+  GroupGovernor[] public list_of_governors;
   MyTimelockController[] public list_of_timelocks;
   TokenContract[] public list_of_tokens;
 
@@ -56,7 +58,7 @@ contract Factory {
 
     address _timeLockAddress = address(_timeLock);
 
-    _governor = new GovernorContractTimeLock(
+    _governor = new GroupGovernor(
       _daoName,
       IVotes(futureTokenAddress),
       _timeLock,
