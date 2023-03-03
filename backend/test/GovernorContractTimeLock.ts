@@ -1,5 +1,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers'
 import { assert, expect } from 'chai'
+import { parseBytes32String } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 
 const { parseEther } = ethers.utils
@@ -147,71 +148,58 @@ describe('Testing of the governor and Token Contract ', function () {
       'Must pay the minimum'
     )
   })
+
+  it('Should allow the owner to create a proposal', async () => {
+    const {
+      governorContract,
+      owner,
+      voters: [voter]
+    } = await loadFixture(deployFixture)
+
+    await expect(
+      governorContract
+        .connect(owner)
+        .propose(
+          [voter.address],
+          [100],
+          [],
+          'This is to pay one of the voters to fill a pothole'
+        )
+    )
+      .to.emit(governorContract, 'ProposalCreated')
+      .withArgs(
+        [voter.address],
+        [100],
+        [],
+        'This is to pay one of the voters to fill a pothole'
+      )
+  })
+
+  it('Should allow the voter to voter for a proposal', async () => {
+    const {
+      governorContract,
+      voters: [voter]
+    } = await loadFixture(deployFixture)
+
+    const tx = governorContract.connect(voter).castVote(0, 0)
+    console.log(tx)
+  })
+
+  it('Should execute a proposal', async () => {
+    const {
+      governorContract,
+      voters: [voter]
+    } = await loadFixture(deployFixture)
+
+    const tx = await governorContract
+      .connect(voter)
+      .execute(
+        [voter.address],
+        [100],
+        [],
+        parseBytes32String('This is to pay one of the voters to fill a pothole')
+      )
+
+    console.log(tx)
+  })
 })
-
-// describe("after proposing", () => {
-//   async function afterProposingFixture() {
-//     const deployValues = await deployFixture();
-//     const { governorContract, tokenContract, owner } = deployValues;
-
-//     const tx = await governor.propose(
-//       [token.address],
-//       [0],
-//       [token.interface.encodeFunctionData("mint", [owner.address, parseEther("25000")])],
-//       "Give the owner more tokens!"
-//     );
-//     const receipt = await tx.wait();
-//     const event = receipt.events.find(x => x.event === 'ProposalCreated');
-//     const { proposalId } = event.args;
-
-//     // wait for the 1 block voting delay
-//     await hre.network.provider.send("evm_mine");
-
-//     return { ...deployValues, proposalId }
-//   }
-
-// it("should set the initial state of the proposal", async () => {
-//   const { governorContract, proposalId } = await loadFixture(afterProposingFixture);
-
-//   const state = await governorContract.state(proposalId);
-//   assert.equal(state, 0);
-// });
-
-// describe("after voting", () => {
-//   async function afterVotingFixture() {
-//     const proposingValues = await afterProposingFixture();
-//     const { governorContract, proposalId } = proposingValues;
-
-//     const tx = await governorContract.castVote(proposalId, 1);
-//     const receipt = await tx.wait();
-//     const voteCastEvent = receipt.events.find(x => x.event === 'VoteCast');
-
-//     // wait for the 1 block voting period
-//     await hre.network.provider.send("evm_mine");
-
-//     return { ...proposingValues, voteCastEvent }
-//   }
-
-// it("should have set the vote", async () => {
-//   const { voteCastEvent, owner } = await loadFixture(afterVotingFixture);
-
-//   assert.equal(voteCastEvent.args.voter, owner.address);
-//   assert.equal(voteCastEvent.args.weight.toString(), parseEther("10000").toString());
-// });
-
-// it("should allow executing the proposal", async () => {
-//   const { governor, token, owner } = await loadFixture(afterVotingFixture);
-
-//   await governor.execute(
-//     [token.address],
-//     [0],
-//     [token.interface.encodeFunctionData("mint", [owner.address, parseEther("25000")])],
-//     keccak256(toUtf8Bytes("Give the owner more tokens!"))
-//   );
-
-// const balance = await token.balanceOf(owner.address);
-// assert.equal(balance.toString(), parseEther("35000").toString());
-// });
-//     });
-//   });
-// });
