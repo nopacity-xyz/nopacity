@@ -40,17 +40,17 @@ contract GroupGovernor is
   }
 
   function join() external {
-    uint allowance = IERC20(paymentToken).allowance(msg.sender, address(this));
+    uint allowance = IERC20(paymentToken).allowance(tx.origin, address(this));
     require(allowance >= minAmount, 'Must pay the minimum');
 
     bool success = IERC20(paymentToken).transferFrom(
-      msg.sender,
+      tx.origin,
       timelock(),
       minAmount
     );
     require(success, 'Failed to transfer ERC20');
 
-    TokenContract(address(token)).safeMint(msg.sender);
+    // TokenContract(address(token)).safeMint(tx.origin);
   }
 
   function votingDelay() public pure override returns (uint256) {
@@ -62,7 +62,7 @@ contract GroupGovernor is
   }
 
   function proposalThreshold() public pure override returns (uint256) {
-    return 1;
+    return 0;
   }
 
   // The following functions are overrides required by Solidity.

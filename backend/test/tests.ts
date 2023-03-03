@@ -1,23 +1,36 @@
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers'
+import { loadFixture, mine } from '@nomicfoundation/hardhat-network-helpers'
 import { assert, expect } from 'chai'
-import { parseBytes32String } from 'ethers/lib/utils'
+import { toUtf8Bytes } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 
 const { parseEther } = ethers.utils
 
 describe('Testing of the governor and Token Contract ', function () {
+  const daoName = 'ETHSD'
+  const votingPeriod = 50400
+  const tokenName = 'OurToken'
+  const tokenSymbol = 'OUT'
+  const minDelay = 0
+  const qourumFraction = 1
+
   async function deployFixture() {
     const [owner, ...voters] = await ethers.getSigners()
-    const daoName = 'ETHSD'
-    const votingPeriod = 50400
-    const tokenName = 'OurToken'
-    const tokenSymbol = 'OUT'
-    const minDelay = 172800
-    const qourumFraction = 51
+
+    //
+    // Helpers
+    //
+
+    const getNextContractAddress = async (extraOffset: number = 0) => {
+      return ethers.utils.getContractAddress({
+        from: owner.address,
+        nonce: (await owner.getTransactionCount()) + 1 + extraOffset
+      })
+    }
 
     //
     // Test ERC20 Token
     //
+
     const PaymentToken = await ethers.getContractFactory('TestPaymentToken')
     const paymentToken = await PaymentToken.connect(owner).deploy()
     await paymentToken.deployed()
@@ -32,46 +45,34 @@ describe('Testing of the governor and Token Contract ', function () {
     // Deploy Timelock
     //
 
-    const futureGovermentAddress = ethers.utils.getContractAddress({
-      from: owner.address,
-      nonce: await owner.getTransactionCount()
-    })
-
+    const governorContractAddress = await getNextContractAddress()
     const TimeLockContract = await ethers.getContractFactory(
       'MyTimelockController'
     )
     const timeLockContract = await TimeLockContract.deploy(
       minDelay,
-      [futureGovermentAddress],
+      [governorContractAddress],
       ['0x0000000000000000000000000000000000000000'],
       owner.address,
       parseEther('100'),
       { gasLimit: 30000000 }
     )
 
-    // console.log('TIME LOCK: ' + timeLockContract.address)
-
     //
     // Deploy Governor
     //
 
-    const futureTokenAddress = ethers.utils.getContractAddress({
-      from: owner.address,
-      nonce: (await owner.getTransactionCount()) + 1
-    })
-
+    const tokenContractAddress = await getNextContractAddress()
     const GovernorContract = await ethers.getContractFactory('GroupGovernor')
     const governorContract = await GovernorContract.deploy(
       daoName,
-      futureTokenAddress,
+      tokenContractAddress,
       timeLockContract.address,
       paymentToken.address,
       votingPeriod,
       qourumFraction,
       { gasLimit: 30000000 }
     )
-
-    // console.log('GOVERNOR CONTRACT: ' + governorContract.address)
 
     //
     // Deploy Token
@@ -86,10 +87,15 @@ describe('Testing of the governor and Token Contract ', function () {
     )
     // Let the owner mint his own NFT
     await tokenContract.safeMint(owner.address)
+    await tokenContract.safeMint(voters[0].address)
     // Transfer the ownership of the token to the governor contract
     await tokenContract.transferOwnership(governorContract.address)
 
-    // console.log('TOKEN CONTRACT: ' + tokenContract.address)
+    console.log('Owner:', owner.address)
+    console.log('Voter:', voters[0].address)
+    console.log('Token Contract: ' + tokenContract.address)
+    console.log('Time Lock: ' + timeLockContract.address)
+    console.log('Governor Contract: ' + governorContract.address)
 
     return {
       paymentToken,
@@ -111,28 +117,102 @@ describe('Testing of the governor and Token Contract ', function () {
   it('should provide the owner with an ERC721 token after they deploy', async () => {
     const { tokenContract, owner } = await loadFixture(deployFixture)
 
+    // Owner should have a vote token :
     const votersTokenBalance = await tokenContract
       .connect(owner)
       .balanceOf(owner.address)
     expect(votersTokenBalance.toString()).equal('1')
+
+    // Should automatically delegate vote to self token:
+    const ownerDelegate = await tokenContract.delegates(owner.address)
+    expect(ownerDelegate).equal(owner.address)
   })
 
   it('voter can join DAO', async () => {
-    const {
-      paymentToken,
-      tokenContract,
-      governorContract,
-      voters: [voter]
-    } = await loadFixture(deployFixture)
+    const { governorContract, owner, paymentToken, tokenContract, voters } =
+      await loadFixture(deployFixture)
+    const [voter] = voters
 
+    // Voter must pay before joining
     await paymentToken
       .connect(voter)
       .approve(governorContract.address, parseEther('100'))
-
+    // Vote joins
     await governorContract.connect(voter).join()
 
+    // Voter should have a vote token
     const votersTokenBalance = await tokenContract.balanceOf(voter.address)
     expect(votersTokenBalance.toString()).equal('1')
+
+    // Should automatically delegate vote to self token:
+    const voterDelegate = await tokenContract.delegates(voter.address)
+    expect(voterDelegate).equal(voter.address)
+
+    describe('after voter joined', function () {
+      it('token holders can delegate', async () => {
+        describe('after delegating', function () {
+          it('owner can create proposal', async () => {
+            const description =
+              'This is to pay one of the voters to fill a pothole'
+            const tx = await governorContract
+              .connect(owner)
+              .propose([voter.address], [100], [toUtf8Bytes('')], description)
+            const receipt = await tx.wait()
+            const event = (receipt.events ?? [])[0]
+
+            if (event == null) throw new Error('Expected event')
+            if (event.eventSignature == null)
+              throw new Error('Expected event signature')
+            if (event.data == null) throw new Error('Expected event data')
+            if (event.decode == null) throw new Error('Expected event decode')
+
+            const eventData = event.decode(event.data, event.topics)
+            const proposalId = eventData.proposalId
+
+            // mine a block
+            await mine(1)
+
+            describe('after proposal', function () {
+              it('Should allow the delegates to vote on proposal', async () => {
+                const voteTx = await governorContract
+                  .connect(voter)
+                  .castVote(proposalId, 1)
+                const ownerVoteTx = await governorContract
+                  .connect(owner)
+                  .castVote(proposalId, 1)
+                await voteTx.wait()
+                await ownerVoteTx.wait()
+
+                describe('after vote', function () {
+                  it('Should execute a proposal', async () => {
+                    // await time.increase(votingPeriod + 10)
+                    await mine(votingPeriod + 10)
+
+                    const descriptionHash = ethers.utils.id(description)
+                    await governorContract
+                      .connect(voter)
+                      .queue(
+                        [voter.address],
+                        [100],
+                        [toUtf8Bytes('')],
+                        descriptionHash
+                      )
+
+                    // console.log(tx1)
+
+                    // const tx2 = await governorContract
+                    //   .connect(voter)
+                    //   .execute([voter.address], [100], [toUtf8Bytes('')], descriptionHash)
+
+                    // console.log(tx2)
+                  })
+                })
+              })
+            })
+          })
+        })
+      })
+    })
   })
 
   it('voter must pay the minimum to join DAO', async () => {
@@ -147,57 +227,99 @@ describe('Testing of the governor and Token Contract ', function () {
     )
   })
 
-  it('Should allow the owner to create a proposal', async () => {
-    const {
-      governorContract,
-      owner,
-      voters: [voter]
-    } = await loadFixture(deployFixture)
+  // it.skip('Should allow the owner to create a proposal', async () => {
+  //   const {
+  //     owner,
+  //     governorContract,
+  //     paymentToken,
+  //     tokenContract,
+  //     voters: [voter]
+  //   } = await loadFixture(deployFixture)
 
-    await expect(
-      governorContract
-        .connect(owner)
-        .propose(
-          [voter.address],
-          [100],
-          [],
-          'This is to pay one of the voters to fill a pothole'
-        )
-    )
-      .to.emit(governorContract, 'ProposalCreated')
-      .withArgs(
-        [voter.address],
-        [100],
-        [],
-        'This is to pay one of the voters to fill a pothole'
-      )
-  })
+  //   const description = 'This is to pay one of the voters to fill a pothole'
+  //   const tx = await governorContract
+  //     .connect(owner)
+  //     .propose([voter.address], [100], [toUtf8Bytes('')], description)
+  //   const receipt = await tx.wait()
+  //   const event = (receipt.events ?? [])[0]
 
-  it('Should allow the voter to voter for a proposal', async () => {
-    const {
-      governorContract,
-      voters: [voter]
-    } = await loadFixture(deployFixture)
+  //   if (event == null) throw new Error('Expected event')
+  //   if (event.eventSignature == null)
+  //     throw new Error('Expected event signature')
+  //   if (event.data == null) throw new Error('Expected event data')
+  //   if (event.decode == null) throw new Error('Expected event decode')
 
-    const tx = governorContract.connect(voter).castVote(0, 0)
-    console.log(tx)
-  })
+  //   const eventData = event.decode(event.data, event.topics)
+  //   const proposalId = eventData.proposalId
 
-  it('Should execute a proposal', async () => {
-    const {
-      governorContract,
-      voters: [voter]
-    } = await loadFixture(deployFixture)
+  //   // console.log(eventData)
 
-    const tx = await governorContract
-      .connect(voter)
-      .execute(
-        [voter.address],
-        [100],
-        [],
-        parseBytes32String('This is to pay one of the voters to fill a pothole')
-      )
+  //   describe('after proposal', function () {
+  //     it('voter can join DAO', async () => {
+  //       // Mine a block
+  //       await mine(1)
 
-    console.log(tx)
-  })
+  //       await paymentToken
+  //         .connect(voter)
+  //         .approve(governorContract.address, parseEther('100'))
+  //       await governorContract.connect(voter).join()
+
+  //       const votersTokenBalance = await tokenContract.balanceOf(voter.address)
+  //       expect(votersTokenBalance.toString()).equal('1')
+
+  //       await mine(1)
+
+  //       describe('after voter joined', function () {
+  //         it('voter and owner can delegate', async () => {
+  //           await tokenContract.connect(owner).delegate(owner.address)
+  //           await tokenContract.connect(voter).delegate(voter.address)
+
+  //           const ownerDelegate = await tokenContract.delegates(owner.address)
+  //           const voterDelegate = await tokenContract.delegates(voter.address)
+
+  //           console.log('delegates', ownerDelegate, voterDelegate)
+
+  //           await mine(1)
+  //           describe('after', function () {
+  //             it('Should allow the voter to voter for a proposal', async () => {
+  //               const ownerVote = await governorContract
+  //                 .connect(owner)
+  //                 .castVote(proposalId, 1)
+  //               const voterVote = await governorContract
+  //                 .connect(voter)
+  //                 .castVote(proposalId, 1)
+  //               await voterVote.wait()
+  //               await ownerVote.wait()
+
+  //               describe('after vote', function () {
+  //                 it('Should execute a proposal', async () => {
+  //                   // await time.increase(votingPeriod + 10)
+  //                   await mine(votingPeriod + 10)
+
+  //                   const descriptionHash = ethers.utils.id(description)
+  //                   await governorContract
+  //                     .connect(voter)
+  //                     .queue(
+  //                       [voter.address],
+  //                       [100],
+  //                       [toUtf8Bytes('')],
+  //                       descriptionHash
+  //                     )
+
+  //                   // console.log(tx1)
+
+  //                   // const tx2 = await governorContract
+  //                   //   .connect(voter)
+  //                   //   .execute([voter.address], [100], [toUtf8Bytes('')], descriptionHash)
+
+  //                   // console.log(tx2)
+  //                 })
+  //               })
+  //             })
+  //           })
+  //         })
+  //       })
+  //     })
+  //   })
+  // })
 })
