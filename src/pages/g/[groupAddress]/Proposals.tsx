@@ -87,8 +87,10 @@ const SingleProposalItem = ({
       // className="nopaque"
       // color="white"
       mt="5%"
+      mb="5%"
       mr="2.5%"
       ml="2.5%"
+      p="2.5%"
       backdropFilter="auto"
       backdropBlur="8px"
       border="1px solid rgba(255, 255, 255, 0.4)"
@@ -121,6 +123,7 @@ const SingleProposalItem = ({
           <Center>
             <Text py="2">{percentagePass}%</Text>
             <Button
+              ml="5%"
               variant="solid"
               backdropFilter="auto"
               backdropBlur="8px"
@@ -147,7 +150,7 @@ export default function Proposals() {
         percentagePass={40}
       />
       <SingleProposalItem
-        proposalDescription="This is a very interesting proposal that does a cool thing"
+        proposalDescription="This proposal has had nobody vote on it yet"
         groupName="Test Group Name"
         groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
         percentagePass={0}

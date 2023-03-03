@@ -4,7 +4,6 @@ import { Plus_Jakarta_Sans } from 'next/font/google'
 import Head from 'next/head'
 import Link from 'next/link'
 
-import DynamicBackground from '@/pages/bg'
 import styles from '@/styles/Home.module.css'
 
 import Layout from './layout'
@@ -23,7 +22,6 @@ export default function Home() {
       <Box>
         <main className={styles.main}>
           <div className={styles.description}>
-            <DynamicBackground />
             <Container
               borderWidth="1px"
               rounded="lg"
@@ -41,9 +39,9 @@ export default function Home() {
               fontWeight="bold"
             >
               <Heading
-                w="100%"
+                // w="100%"
                 textAlign="left"
-                fontWeight="normal"
+                fontWeight="bold"
                 mb="2%"
                 // color="white"
               >
@@ -61,12 +59,6 @@ export default function Home() {
               </Heading>
               <Link href="/create-group">
                 <Button colorScheme="blue">Create a group</Button>
-              </Link>
-              <Link href="/g">
-                <Button colorScheme="blue">View all groups</Button>
-              </Link>
-              <Link href="/g/adssajdlkj">
-                <Button colorScheme="blue">View single group</Button>
               </Link>
             </Container>
           </div>

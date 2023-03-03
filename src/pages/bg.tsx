@@ -4,13 +4,39 @@ export default function DynamicBackground() {
       xmlns="http://www.w3.org/2000/svg"
       preserveAspectRatio="xMidYMin slice"
       viewBox="24 105 156 95"
+      style={{
+        zIndex: -10000,
+        width: '100%',
+        height: '100%',
+        position: 'absolute'
+      }}
     >
       <defs>
         <style
           type="text/css"
           dangerouslySetInnerHTML={{
-            __html:
-              '\n\t\t\t\t@keyframes rotate {\n\t\t\t\t\t 100% {\n\t\t\t\t\t\t  transform: rotate(360deg)\n\t\t\t\t\t }\n\t\t\t\t}\n\n\t\t\t\t.top-outer {\n\t\t\t\t\t transform-origin: 73px 69px;\n\t\t\t\t\t animation: rotate 30s linear infinite;\n\t\t\t\t}\n\n\t\t\t\t.top-inner {\n\t\t\t\t\t transform-origin: 73px 69px;\n\t\t\t\t\t animation: rotate 20s linear infinite;\n\t\t\t\t}\n\n\t\t\t\t.bottom-outer {\n\t\t\t\t\t transform-origin: 134px 222px;\n\t\t\t\t\t animation: rotate 30s linear infinite;\n\t\t\t\t}\n\n\t\t\t\t.bottom-inner {\n\t\t\t\t\t\t\t\ttransform-origin: 134px  222px;\n\t\t\t\t\t\t\t\tanimation: rotate 20s linear infinite;\n\t\t\t\t}\n        '
+            __html: `
+              @keyframes rotate {
+                100% {
+                  transform: rotate(360deg) 
+                }
+              } 
+              .top-outer { 
+                transform-origin: 73px 69px;
+                animation: rotate 30s linear infinite;
+              }
+              .top-inner { 
+                transform-origin: 73px 69px;
+                animation: rotate 20s linear infinite;
+              }
+              .bottom-outer {
+                transform-origin: 134px 222px;
+                animation: rotate 30s linear infinite;
+              }
+              .bottom-inner {
+                transform-origin: 134px  222px;
+                animation: rotate 20s linear infinite;
+              }`
           }}
         />
       </defs>
@@ -18,7 +44,7 @@ export default function DynamicBackground() {
         <stop offset="5%" stopColor="#8fffda" />
         <stop offset="95%" stopColor="#bdff7a" />
       </linearGradient>
-      <rect x={0} y={0} width={300} height={300} fill="url(#MyGradient)" />
+      <rect x={0} y={0} width="100vw" height="100vh" fill="url(#MyGradient)" />
       <path
         className="top-outer"
         fill="#7AD1ED"

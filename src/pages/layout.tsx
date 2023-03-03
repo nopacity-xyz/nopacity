@@ -2,6 +2,8 @@ import { Box } from '@chakra-ui/react'
 
 import NavBar from '@/components/Navigation/NavBar'
 
+import DynamicBackground from './bg'
+
 interface Props {
   children?: React.ReactNode
 }
@@ -11,10 +13,11 @@ export default function Layout({ children }: Props) {
     <Box
       w="100%"
       h="100%"
-      bgGradient="linear(to-l, #7928CA, #FF0080)"
+      background="rgba(0,0,0,0)"
       flex={1}
       minHeight="100vh"
     >
+      <DynamicBackground />
       <Box maxWidth={1080} m="auto" position="relative">
         <NavBar />
         <Box m="5%" mt="0px" mb="0px">

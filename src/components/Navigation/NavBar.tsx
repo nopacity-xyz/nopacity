@@ -39,9 +39,11 @@ const NavLink = ({ name, link }: NavLinkProps): JSX.Element => (
     px={2}
     py={1}
     rounded="md"
+    color="white"
+    fontWeight="bold"
     _hover={{
       textDecoration: 'none',
-      bg: useColorModeValue('gray.200', 'gray.700')
+      bg: useColorModeValue('gray.700', 'gray.400')
     }}
     href={link}
   >
@@ -101,6 +103,10 @@ export default function NavBar() {
       as="header"
       borderBottomRadius={10}
       position="sticky"
+      backdropFilter="auto"
+      backdropBlur="8px"
+      border="1px solid rgba(255, 255, 255, 0.4)"
+      backgroundColor="rgba(255, 255, 255, 0.3)"
     >
       <Flex h={16} alignItems="center" justifyContent="space-between">
         <IconButton

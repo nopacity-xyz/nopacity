@@ -4,6 +4,7 @@ import {
   Card,
   CardBody,
   CardFooter,
+  Center,
   Flex,
   Heading,
   Image,
@@ -73,49 +74,63 @@ const SingleGroupItem = ({
 
 export default function Groups() {
   return (
-    <Layout>
-      <Box>
-        <Flex>
-          <Heading
-            w="100%"
-            textAlign="left"
-            fontWeight="normal"
-            mb="2%"
-            color="white"
-            // color="white"
-          >
-            Groups
-          </Heading>
-        </Flex>
-        <Flex>
-          <SingleGroupItem
-            groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
-            groupName="Test Group Name"
-            groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
-            numMembers={40}
-          />
-          <SingleGroupItem
-            groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
-            groupName="Test Group Name"
-            groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
-            numMembers={40}
-          />
-        </Flex>
-        <Flex>
-          <SingleGroupItem
-            groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
-            groupName="Test Group Name"
-            groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
-            numMembers={40}
-          />
-          <SingleGroupItem
-            groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
-            groupName="Test Group Name"
-            groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
-            numMembers={40}
-          />
-        </Flex>
-      </Box>
-    </Layout>
+    <>
+      <Layout>
+        <Box
+          mt="5%"
+          p="5%"
+          backdropFilter="auto"
+          backdropBlur="8px"
+          border="1px solid rgba(255, 255, 255, 0.4)"
+          borderRadius="20px"
+          backgroundColor="rgba(255, 255, 255, 0.2)"
+        >
+          <Center>
+            <Box>
+              <Flex>
+                <Heading
+                  w="100%"
+                  textAlign="left"
+                  fontWeight="bold"
+                  mb="2%"
+                  color="white"
+                  // color="white"
+                >
+                  Groups
+                </Heading>
+              </Flex>
+              <Flex>
+                <SingleGroupItem
+                  groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
+                  groupName="Test Group Name"
+                  groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
+                  numMembers={40}
+                />
+                <SingleGroupItem
+                  groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
+                  groupName="Test Group Name"
+                  groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
+                  numMembers={40}
+                />
+              </Flex>
+              <Flex>
+                <SingleGroupItem
+                  groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
+                  groupName="Test Group Name"
+                  groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
+                  numMembers={40}
+                />
+                <SingleGroupItem
+                  groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
+                  groupName="Test Group Name"
+                  groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
+                  numMembers={40}
+                />
+              </Flex>
+            </Box>
+          </Center>
+        </Box>
+      </Layout>
+    </>
   )
 }
