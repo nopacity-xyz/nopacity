@@ -60,6 +60,12 @@ export default function Home() {
               <Link href="/create-group">
                 <Button colorScheme="blue">Create a group</Button>
               </Link>
+              <Link href="/g">
+                <Button colorScheme="blue">View all groups</Button>
+              </Link>
+              <Link href="/g/adssajdlkj">
+                <Button colorScheme="blue">View single group</Button>
+              </Link>
             </Container>
           </div>
         </main>

@@ -106,12 +106,14 @@ export default function NavBar() {
           onClick={isOpen ? onClose : onOpen}
         />
         <HStack spacing={8} alignItems="center">
-          <Image
-            src="https://i.imgur.com/3dVHFRu.png"
-            boxSize="50px"
-            objectFit="cover"
-            alt="Nopacity Logo"
-          />
+          <Link href="/">
+            <Image
+              src="https://i.imgur.com/3dVHFRu.png"
+              boxSize="50px"
+              objectFit="cover"
+              alt="Nopacity Logo"
+            />
+          </Link>
           {/* <Image
               src="https://i.imgur.com/LHIXA73.png"
               // boxSize="50px"
