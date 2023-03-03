@@ -1,41 +1,120 @@
-import { ethers } from 'hardhat'
+import hre, { ethers } from 'hardhat'
+
+const { parseEther } = ethers.utils
 
 async function main() {
-  const [owner] = await ethers.getSigners()
+  const daoName = 'ETHSD'
+  const votingDelay = 1
+  const votingPeriod = 50400 // 1 week
+  const tokenName = 'OurToken'
+  const tokenSymbol = 'OUT'
+  const timelockDelay = 300 // 1 hour
+  const qourumFraction = 1
 
-  const transactionCount = await owner.getTransactionCount()
+  const [owner, ...voters] = await ethers.getSigners()
 
-  // gets the address of the token before it is deployed
-  const futureTokenAddress = ethers.utils.getContractAddress({
-    from: owner.address,
-    nonce: transactionCount + 1
-  })
-  const futureTimelockAddress = ethers.utils.getContractAddress({
-    from: owner.address,
-    nonce: transactionCount + 2
-  })
+  //
+  // Helpers
+  //
 
-  // Voting period is in blocks
-  const votingPeriod = 1000
-  // Fraction is in percentages (10 means 10%, etc)
-  const quorumFraction = 50
+  const getNextContractAddress = async (extraOffset: number = 0) => {
+    return ethers.utils.getContractAddress({
+      from: owner.address,
+      nonce: (await owner.getTransactionCount()) + 1 + extraOffset
+    })
+  }
 
-  const MyGovernor = await ethers.getContractFactory('GroupGovernor')
-  const governor = await MyGovernor.deploy(
-    'Lil Dao Wow',
-    futureTokenAddress,
-    futureTimelockAddress,
+  //
+  // Test ERC20 Token
+  //
+
+  const PaymentToken = await ethers.getContractFactory('TestPaymentToken')
+  const paymentToken = await PaymentToken.connect(owner).deploy()
+  await paymentToken.deployed()
+
+  for (let i = 0; i < 5; ++i) {
+    await paymentToken
+      .connect(owner)
+      .transfer(voters[i].address, parseEther('1000'))
+  }
+
+  //
+  // Deploy Timelock
+  //
+
+  const governorContractAddress = await getNextContractAddress()
+  const TimeLockContract = await ethers.getContractFactory(
+    'MyTimelockController'
+  )
+  const timeLockContract = await TimeLockContract.deploy(
+    timelockDelay,
+    [governorContractAddress],
+    ['0x0000000000000000000000000000000000000000'],
+    owner.address,
+    parseEther('100'),
+    { gasLimit: 30000000 }
+  )
+  await timeLockContract.deployed()
+
+  //
+  // Deploy Governor
+  //
+
+  const tokenContractAddress = await getNextContractAddress()
+  const GovernorContract = await ethers.getContractFactory('GroupGovernor')
+  const governorContract = await GovernorContract.deploy(
+    daoName,
+    tokenContractAddress,
+    timeLockContract.address,
+    paymentToken.address,
+    votingDelay,
     votingPeriod,
-    quorumFraction
+    qourumFraction,
+    { gasLimit: 30000000 }
   )
+  await governorContract.deployed()
 
-  const MyToken = await ethers.getContractFactory('MyToken')
-  const token = await MyToken.deploy(governor.address, 'thisISATOKEN', 'LOL')
+  //
+  // Deploy Token
+  //
 
-  console.log(
-    `Governor deployed to ${governor.address}`,
-    `Token deployed to ${token.address}`
+  const TokenContract = await ethers.getContractFactory('TokenContract')
+  const tokenContract = await TokenContract.deploy(
+    governorContract.address,
+    tokenName,
+    tokenSymbol,
+    { gasLimit: 30000000 }
   )
+  await tokenContract.deployed()
+
+  // Let the owner mint his own NFT
+  await tokenContract.safeMint(owner.address)
+  await tokenContract.safeMint(voters[0].address)
+  // Transfer the ownership of the token to the governor contract
+  await tokenContract.transferOwnership(governorContract.address)
+
+  console.log('Owner:', owner.address)
+  console.log('Voter:', voters[0].address)
+  console.log('Token Contract: ' + tokenContract.address)
+  console.log('Time Lock: ' + timeLockContract.address)
+  console.log('Governor Contract: ' + governorContract.address)
+
+  await hre.tenderly.persistArtifacts({
+    name: 'TestPaymentToken',
+    address: paymentToken.address
+  })
+  await hre.tenderly.persistArtifacts({
+    name: 'TokenContract',
+    address: tokenContract.address
+  })
+  await hre.tenderly.persistArtifacts({
+    name: 'MyTimelockController',
+    address: timeLockContract.address
+  })
+  await hre.tenderly.persistArtifacts({
+    name: 'GroupGovernor',
+    address: governorContract.address
+  })
 }
 
 main().catch(error => {
