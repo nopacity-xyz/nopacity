@@ -7,6 +7,7 @@ const { parseEther } = ethers.utils
 
 describe('Testing of the governor and Token Contract ', function () {
   const daoName = 'ETHSD'
+  const votingDelay = 1
   const votingPeriod = 50400
   const tokenName = 'OurToken'
   const tokenSymbol = 'OUT'
@@ -69,6 +70,7 @@ describe('Testing of the governor and Token Contract ', function () {
       tokenContractAddress,
       timeLockContract.address,
       paymentToken.address,
+      votingDelay,
       votingPeriod,
       qourumFraction,
       { gasLimit: 30000000 }
@@ -169,8 +171,8 @@ describe('Testing of the governor and Token Contract ', function () {
             const eventData = event.decode(event.data, event.topics)
             const proposalId = eventData.proposalId
 
-            // mine a block
-            await mine(1)
+            // mine a block for the proposal to pass the voting delay
+            await mine(votingDelay)
 
             describe('after proposal', function () {
               it('Should allow the delegates to vote on proposal', async () => {
@@ -185,8 +187,7 @@ describe('Testing of the governor and Token Contract ', function () {
 
                 describe('after vote', function () {
                   it('Should execute a proposal', async () => {
-                    // await time.increase(votingPeriod + 10)
-                    await mine(votingPeriod + 10)
+                    await mine(votingPeriod)
 
                     const descriptionHash = ethers.utils.id(description)
                     await governorContract

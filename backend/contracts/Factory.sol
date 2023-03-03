@@ -63,6 +63,7 @@ contract Factory {
       IVotes(futureTokenAddress),
       _timeLock,
       paymentToken,
+      1,
       _votingPeriod,
       _quorumFraction
     );

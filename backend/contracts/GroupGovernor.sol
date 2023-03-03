@@ -17,7 +17,8 @@ contract GroupGovernor is
   GovernorVotesQuorumFraction,
   GovernorTimelockControl
 {
-  uint256 votingperiod;
+  uint256 _votingDelay;
+  uint256 _votingPeriod;
   address public paymentToken;
 
   uint minAmount = 100e18;
@@ -27,7 +28,8 @@ contract GroupGovernor is
     IVotes _token,
     TimelockController _timelock,
     IERC20 _paymentToken,
-    uint256 _votingPeriod,
+    uint256 __votingDelay,
+    uint256 __votingPeriod,
     uint8 _quorumFraction
   )
     Governor(_name)
@@ -35,7 +37,8 @@ contract GroupGovernor is
     GovernorVotesQuorumFraction(_quorumFraction)
     GovernorTimelockControl(_timelock)
   {
-    votingperiod = _votingPeriod;
+    _votingDelay = __votingDelay;
+    _votingPeriod = __votingPeriod;
     paymentToken = address(_paymentToken);
   }
 
@@ -53,12 +56,12 @@ contract GroupGovernor is
     // TokenContract(address(token)).safeMint(tx.origin);
   }
 
-  function votingDelay() public pure override returns (uint256) {
-    return 1; // 1 block
+  function votingDelay() public view override returns (uint256) {
+    return _votingDelay; // 1 block
   }
 
   function votingPeriod() public view override returns (uint256) {
-    return votingperiod; // time in seconds
+    return _votingPeriod; // time in seconds
   }
 
   function proposalThreshold() public pure override returns (uint256) {

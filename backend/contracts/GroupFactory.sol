@@ -24,6 +24,7 @@ contract GroupFactory {
     IVotes _token,
     TimelockController _timelock,
     IERC20 _paymentToken,
+    uint256 _votingDelay,
     uint256 _votingPeriod,
     uint8 _quorumFraction
   ) external returns (address) {
@@ -32,6 +33,7 @@ contract GroupFactory {
       _token,
       _timelock,
       _paymentToken,
+      _votingDelay,
       _votingPeriod,
       _quorumFraction
     );
