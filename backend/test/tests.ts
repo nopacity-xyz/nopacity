@@ -155,12 +155,22 @@ describe('Testing of the governor and Token Contract ', function () {
       it('token holders can delegate', async () => {
         describe('after delegating', function () {
           it('owner can create proposal', async () => {
-            // Make proposal
+            // Prepare proposal payload:
+            const target = paymentToken.address
+            const calldata = toUtf8Bytes(
+              paymentToken.interface.encodeFunctionData('transfer', [
+                voter.address,
+                100
+              ])
+            )
             const description =
               'This is to pay one of the voters to fill a pothole'
+            const descriptionHash = ethers.utils.id(description)
+
+            // Make proposal:
             const tx = await governorContract
               .connect(owner)
-              .propose([voter.address], [100], [toUtf8Bytes('')], description)
+              .propose([target], [0], [calldata], description)
             const receipt = await tx.wait()
             const event = (receipt.events ?? [])[0]
 
@@ -193,27 +203,16 @@ describe('Testing of the governor and Token Contract ', function () {
                   it('Should execute a proposal', async () => {
                     await mine(votingPeriod)
 
-                    const descriptionHash = ethers.utils.id(description)
                     await governorContract
                       .connect(voter)
-                      .queue(
-                        [voter.address],
-                        [100],
-                        [toUtf8Bytes('')],
-                        descriptionHash
-                      )
+                      .queue([target], [0], [calldata], descriptionHash)
 
                     // Wait until timelock delay has passed before executing
                     await mine(timelockDelay)
 
                     await governorContract
                       .connect(voter)
-                      .execute(
-                        [voter.address],
-                        [100],
-                        [toUtf8Bytes('')],
-                        descriptionHash
-                      )
+                      .execute([target], [0], [calldata], descriptionHash)
                   })
                 })
               })
