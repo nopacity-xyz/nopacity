@@ -161,12 +161,11 @@ describe('Testing of the governor and Token Contract ', function () {
           it('owner can create proposal', async () => {
             // Prepare proposal payload:
             const target = paymentToken.address
-            const calldata = toUtf8Bytes(
-              paymentToken.interface.encodeFunctionData('transfer', [
-                voter.address,
-                100
-              ])
+            const calldataEncoding = paymentToken.interface.encodeFunctionData(
+              'transfer',
+              [voter.address, 100]
             )
+            const calldata = toUtf8Bytes(calldataEncoding)
             const description =
               'This is to pay one of the voters to fill a pothole'
             const descriptionHash = ethers.utils.id(description)
