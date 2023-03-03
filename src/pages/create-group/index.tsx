@@ -1,4 +1,4 @@
-import { QuestionIcon } from '@chakra-ui/icons'
+import { QuestionOutlineIcon } from '@chakra-ui/icons'
 import {
   Box,
   Button,
@@ -108,6 +108,10 @@ export default function CreateGroup() {
         p={6}
         m="10px auto"
         as="form"
+        backdropFilter="auto"
+        backdropBlur="8px"
+        border="1px solid rgba(255, 255, 255, 0.4)"
+        backgroundColor="rgba(255, 255, 255, 0.2)"
       >
         <Progress
           hasStripe
@@ -121,16 +125,22 @@ export default function CreateGroup() {
           // FORM #1
           <>
             {/* GROUP CONFIG */}
-            <Heading w="100%" textAlign="left" fontWeight="normal" mb="2%">
+            <Heading
+              w="100%"
+              textAlign="left"
+              fontWeight="bold"
+              mb="2%"
+              color="black"
+            >
               Configure Group
             </Heading>
-            <Flex>
+            <Flex color="black">
               {/* GROUP NAME */}
               <FormControl mr="5%" isRequired>
                 <Flex>
                   <FormLabel fontWeight="normal">Group Name</FormLabel>
                   <Tooltip label="What's the name?">
-                    <QuestionIcon />
+                    <QuestionOutlineIcon />
                   </Tooltip>
                 </Flex>
                 <Input
@@ -154,7 +164,7 @@ export default function CreateGroup() {
                 <Flex>
                   <FormLabel fontWeight="normal">Group Description</FormLabel>
                   <Tooltip label="What's the purpose of your group?">
-                    <QuestionIcon />
+                    <QuestionOutlineIcon />
                   </Tooltip>
                 </Flex>
                 <Textarea
@@ -244,26 +254,37 @@ export default function CreateGroup() {
                 </FormControl>
               </Flex>
             </Flex>
-            <Button mt="5%" onClick={onToggle}>
+            <Button
+              mt="5%"
+              onClick={onToggle}
+              backdropFilter="auto"
+              backdropBlur="8px"
+              border="1px solid rgba(255, 255, 255, 0.4)"
+              backgroundColor="rgba(255, 255, 255, 0.5)"
+            >
               Show Advanced Settings
             </Button>
             <Collapse in={isOpen} animateOpacity>
               <Box
                 p="40px"
-                color="white"
+                // color="white"
                 mt="4"
-                bg="teal.500"
+                // bg="teal.500"
                 rounded="md"
                 shadow="md"
+                backdropFilter="auto"
+                backdropBlur="8px"
+                border="1px solid rgba(255, 255, 255, 0.4)"
+                backgroundColor="rgba(255, 255, 255, 0.1)"
               >
                 <Flex>
                   {/* VOTING QUORUM PERCENTAGE */}
 
                   <FormControl isRequired>
                     <Flex>
-                      <FormLabel fontWeight="normal">Pass %</FormLabel>
+                      <FormLabel fontWeight="bold">Pass %</FormLabel>
                       <Tooltip label="What percentage of the voters in your group need to agree with your idea for it to pass?">
-                        <QuestionIcon />
+                        <QuestionOutlineIcon />
                       </Tooltip>
                     </Flex>
                     <NumberInput
@@ -298,11 +319,16 @@ export default function CreateGroup() {
         ) : // FORM #2
         step === 2 ? (
           <>
-            <Heading w="100%" textAlign="center" fontWeight="normal" mb="2%">
+            <Heading w="100%" textAlign="center" fontWeight="bold" mb="2%">
               Review Configuration
             </Heading>
             <FormControl as={GridItem} colSpan={[6, 3]}>
-              <Card>
+              <Card
+                backdropFilter="auto"
+                backdropBlur="8px"
+                border="1px solid rgba(255, 255, 255, 0.4)"
+                backgroundColor="rgba(255, 255, 255, 0.2)"
+              >
                 <CardHeader>
                   <Heading size="md">Group Data</Heading>
                 </CardHeader>
@@ -430,8 +456,13 @@ export default function CreateGroup() {
               {step === 2 ? (
                 <Button
                   w="7rem"
-                  colorScheme="blue"
+                  color="white"
                   variant="solid"
+                  backdropFilter="auto"
+                  backdropBlur="8px"
+                  border="1px solid rgba(255, 255, 255, 0.4)"
+                  backgroundColor="rgba(43, 108, 176, 0.6)"
+                  _hover={{ bg: 'rgba(43, 108, 176, 1)' }}
                   onClick={() => {
                     toast({
                       title: 'Account created.',
@@ -457,7 +488,10 @@ export default function CreateGroup() {
                       setProgress(progress + 33.33)
                     }
                   }}
-                  colorScheme="teal"
+                  backdropFilter="auto"
+                  backdropBlur="8px"
+                  border="1px solid rgba(255, 255, 255, 0.4)"
+                  backgroundColor="rgba(255, 255, 255, 0.5)"
                   variant="solid"
                 >
                   Next
