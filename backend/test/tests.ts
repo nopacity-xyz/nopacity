@@ -58,6 +58,7 @@ describe('Testing of the governor and Token Contract ', function () {
       parseEther('100'),
       { gasLimit: 30000000 }
     )
+    await timeLockContract.deployed()
 
     //
     // Deploy Governor
@@ -75,6 +76,7 @@ describe('Testing of the governor and Token Contract ', function () {
       qourumFraction,
       { gasLimit: 30000000 }
     )
+    await governorContract.deployed()
 
     //
     // Deploy Token
@@ -87,6 +89,8 @@ describe('Testing of the governor and Token Contract ', function () {
       tokenSymbol,
       { gasLimit: 30000000 }
     )
+    await tokenContract.deployed()
+
     // Let the owner mint his own NFT
     await tokenContract.safeMint(owner.address)
     await tokenContract.safeMint(voters[0].address)
