@@ -8,10 +8,10 @@ const { parseEther } = ethers.utils
 describe('Testing of the governor and Token Contract ', function () {
   const daoName = 'ETHSD'
   const votingDelay = 1
-  const votingPeriod = 50400
+  const votingPeriod = 50400 // 1 week
   const tokenName = 'OurToken'
   const tokenSymbol = 'OUT'
-  const minDelay = 0
+  const timelockDelay = 300 // 1 hour
   const qourumFraction = 1
 
   async function deployFixture() {
@@ -51,7 +51,7 @@ describe('Testing of the governor and Token Contract ', function () {
       'MyTimelockController'
     )
     const timeLockContract = await TimeLockContract.deploy(
-      minDelay,
+      timelockDelay,
       [governorContractAddress],
       ['0x0000000000000000000000000000000000000000'],
       owner.address,
@@ -155,6 +155,7 @@ describe('Testing of the governor and Token Contract ', function () {
       it('token holders can delegate', async () => {
         describe('after delegating', function () {
           it('owner can create proposal', async () => {
+            // Make proposal
             const description =
               'This is to pay one of the voters to fill a pothole'
             const tx = await governorContract
@@ -202,13 +203,17 @@ describe('Testing of the governor and Token Contract ', function () {
                         descriptionHash
                       )
 
-                    // console.log(tx1)
+                    // Wait until timelock delay has passed before executing
+                    await mine(timelockDelay)
 
-                    // const tx2 = await governorContract
-                    //   .connect(voter)
-                    //   .execute([voter.address], [100], [toUtf8Bytes('')], descriptionHash)
-
-                    // console.log(tx2)
+                    await governorContract
+                      .connect(voter)
+                      .execute(
+                        [voter.address],
+                        [100],
+                        [toUtf8Bytes('')],
+                        descriptionHash
+                      )
                   })
                 })
               })
