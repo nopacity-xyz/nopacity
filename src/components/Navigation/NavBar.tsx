@@ -24,12 +24,17 @@ import { useSelector } from '@/hooks/useSelector'
 
 import Blockie from './Blockie'
 
-const Links = ['Dashboard', 'Projects', 'Team']
+const Links = [
+  { name: 'Groups', link: '/g' },
+  { name: 'Create a Group', link: 'create-group' }
+]
 
 interface NavLinkProps {
-  children: React.ReactNode
+  name: string
+  link: string
 }
-const NavLink = ({ children }: NavLinkProps) => (
+
+const NavLink = ({ name, link }: NavLinkProps): JSX.Element => (
   <Link
     px={2}
     py={1}
@@ -38,9 +43,9 @@ const NavLink = ({ children }: NavLinkProps) => (
       textDecoration: 'none',
       bg: useColorModeValue('gray.200', 'gray.700')
     }}
-    href="#"
+    href={link}
   >
-    {children}
+    {name}
   </Link>
 )
 
@@ -114,13 +119,11 @@ export default function NavBar() {
               alt="Nopacity Logo"
             />
           </Link>
-          {/* <Image
-              src="https://i.imgur.com/LHIXA73.png"
-              // boxSize="50px"
-              height="50px"
-              objectFit="cover"
-              alt="Nopacity Logo"
-            /> */}
+          <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
+            {Links.map(link => (
+              <NavLink key={link.link} name={link.name} link={link.link} />
+            ))}
+          </HStack>
           <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }} />
         </HStack>
         <Flex alignItems="center">
@@ -143,7 +146,6 @@ export default function NavBar() {
               <MenuList>
                 <MenuDivider />
                 <MenuItem onClick={handleClickWallet}>My Profile</MenuItem>
-                {/* <MenuItem onClick={getUserTokenBalance}>My Tokens</MenuItem> */}
                 <MenuDivider />
                 <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
               </MenuList>
@@ -156,7 +158,7 @@ export default function NavBar() {
         <Box pb={4} display={{ md: 'none' }}>
           <Stack as="nav" spacing={4}>
             {Links.map(link => (
-              <NavLink key={link}>{link}</NavLink>
+              <NavLink key={link.link} name={link.name} link={link.link} />
             ))}
           </Stack>
         </Box>

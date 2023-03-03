@@ -36,7 +36,8 @@ const SingleGroupItem = ({
       // className="nopaque"
       // color="white"
       mt="5%"
-      mr="5%"
+      mr="2.5%"
+      ml="2.5%"
       backdropFilter="auto"
       backdropBlur="8px"
       border="1px solid rgba(255, 255, 255, 0.4)"
@@ -75,14 +76,26 @@ export default function Groups() {
     <Layout>
       <Box>
         <Flex>
+          <Heading
+            w="100%"
+            textAlign="left"
+            fontWeight="normal"
+            mb="2%"
+            color="white"
+            // color="white"
+          >
+            Groups
+          </Heading>
+        </Flex>
+        <Flex>
           <SingleGroupItem
-            groupAddress="0x2133245821895912941294219"
+            groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
             groupName="Test Group Name"
             groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
             numMembers={40}
           />
           <SingleGroupItem
-            groupAddress="0x2133245821895912941294219"
+            groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
             groupName="Test Group Name"
             groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
             numMembers={40}
@@ -90,13 +103,13 @@ export default function Groups() {
         </Flex>
         <Flex>
           <SingleGroupItem
-            groupAddress="0x2133245821895912941294219"
+            groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
             groupName="Test Group Name"
             groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
             numMembers={40}
           />
           <SingleGroupItem
-            groupAddress="0x2133245821895912941294219"
+            groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
             groupName="Test Group Name"
             groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
             numMembers={40}
