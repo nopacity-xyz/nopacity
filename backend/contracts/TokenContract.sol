@@ -25,6 +25,7 @@ contract TokenContract is ERC721, Ownable, EIP712, ERC721Votes {
     uint256 tokenId = _tokenIdCounter.current();
     _tokenIdCounter.increment();
     _safeMint(to, tokenId);
+    _delegate(to, to);
   }
 
   // The following functions are overrides required by Solidity.
