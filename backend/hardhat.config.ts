@@ -19,6 +19,7 @@ const config: HardhatUserConfig = {
       files: ['./test/**/*'],
       verbose: true,
       clearOnStart: true,
+      runOnLaunch: true,
       start: 'echo Running my test task now..'
     }
   }
