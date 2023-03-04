@@ -1,4 +1,4 @@
-import { Box, Button, Container, Heading } from '@chakra-ui/react'
+import { Box, Button, Container, Flex, Heading } from '@chakra-ui/react'
 // import { Alchemy, Network, Utils } from 'alchemy-sdk'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import Head from 'next/head'
@@ -25,8 +25,8 @@ export default function Home() {
             <Container
               borderWidth="1px"
               rounded="lg"
-              shadow="1px 1px 3px rgba(0,0,0,0.3)"
               maxWidth={800}
+              height={500}
               p={6}
               m="10px auto"
               display="flex"
@@ -35,6 +35,10 @@ export default function Home() {
               color="white"
               backdropFilter="auto"
               backdropBlur="8px"
+              // shadow="0px, 40px, 61px, black"
+              // boxShadow="dark-lg"
+              // shadow="1px 1px 3px rgba(0,0,0,0.3)"
+              shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
               className={jakarta.className}
               fontWeight="bold"
             >
@@ -43,22 +47,35 @@ export default function Home() {
                 textAlign="left"
                 fontWeight="bold"
                 mb="2%"
+                size="3xl"
+                textShadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),5px 5px 15px rgba(0,0,0,0.3)"
                 // color="white"
               >
                 Create value to fund your endeavor
               </Heading>
               <Heading
-                size="md"
+                size="lg"
                 w="100%"
                 textAlign="left"
                 fontWeight="normal"
                 mb="2%"
-                textShadow="0px 0px 5px #fff, 1px 1px 5px #ccc"
+                textShadow="0px 0px 5px #fff, 1px 1px 5px #ccc, 5px 5px 10px rgba(0,0,0,0.3)"
+                // textShadow="5px 10px 15px rgba(0,0,0,0.4)"
               >
                 (not the other way around)
               </Heading>
+              <p style={{ flexGrow: 1 }} />
               <Link href="/create-group">
-                <Button colorScheme="blue">Create a group</Button>
+                <Button
+                  size="lg"
+                  backgroundColor="#052733"
+                  fontWeight="bold"
+                  _hover={{
+                    backgroundColor: 'gray.500'
+                  }}
+                >
+                  Create a group
+                </Button>
               </Link>
             </Container>
           </div>

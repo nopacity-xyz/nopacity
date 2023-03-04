@@ -135,7 +135,7 @@ export default function CreateGroup() {
       <Box
         borderWidth="1px"
         rounded="lg"
-        shadow="1px 1px 3px rgba(0,0,0,0.3)"
+        shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
         maxWidth={800}
         p={6}
         m="10px auto"

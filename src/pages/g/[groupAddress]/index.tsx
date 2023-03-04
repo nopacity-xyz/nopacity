@@ -18,6 +18,7 @@ export default function Group({
           border="1px solid rgba(255, 255, 255, 0.4)"
           borderRadius="20px"
           backgroundColor="rgba(255, 255, 255, 0.2)"
+          shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
         >
           <Center>
             <Box>
