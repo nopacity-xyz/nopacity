@@ -1,4 +1,5 @@
 import makeBlockie from 'ethereum-blockies-base64'
+import Image from 'next/image'
 
 interface Props {
   address: string
@@ -7,9 +8,10 @@ interface Props {
 export default function Blockie({ address }: Props) {
   return (
     <div style={{ height: '40px' }}>
-      <img
+      <Image
         style={{ height: '100%', borderRadius: '5px' }}
         src={makeBlockie(address)}
+        alt="Profile Icon"
       />
     </div>
   )
