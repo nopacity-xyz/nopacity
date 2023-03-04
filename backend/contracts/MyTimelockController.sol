@@ -19,8 +19,4 @@ contract MyTimelockController is TimelockController {
   ) TimelockController(minDelay, proposers, executors, admin) {
     minAmount = _minAmount;
   }
-
-  function joinDao(address _user) external payable {
-    require(msg.value >= minAmount);
-  }
 }
