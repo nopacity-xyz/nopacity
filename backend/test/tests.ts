@@ -26,6 +26,17 @@ async function deployFixture() {
     })
   }
 
+  const getContractAddressFromFactory = async (
+    address: string,
+    contractNonce: number,
+    extraOffset: number = 0
+  ) => {
+    return ethers.utils.getContractAddress({
+      from: address,
+      nonce: contractNonce + 1 + extraOffset
+    })
+  }
+
   //
   // Test ERC20 Token
   //
@@ -48,11 +59,18 @@ async function deployFixture() {
   const groupFactory = await GroupFactory.deploy()
   await groupFactory.deployed()
 
+  const groupCounts = await (await groupFactory.groupCount()).toNumber()
+  console.log('GROUP')
+  console.log(groupCounts)
+
   //
   // Deploy Timelock
   //
 
-  const governorContractAddress = await getNextContractAddress()
+  const governorContractAddress = await getContractAddressFromFactory(
+    groupFactory.address,
+    groupCounts
+  )
   const TimeLockContract = await ethers.getContractFactory(
     'MyTimelockController'
   )
@@ -81,9 +99,16 @@ async function deployFixture() {
     qourumFraction,
     { gasLimit: 30000000 }
   )
-  const receipt = await tx.wait(0)
 
-  console.log(receipt.events)
+  console.log('here')
+
+  const myGovernorAddress = groupFactory.filters.DeployGroupGovernor().address
+
+  console.log('here')
+  console.log(myGovernorAddress)
+  console.log(governorContractAddress)
+
+  // const receipt = await tx.wait(0)
 
   const governorContract = await ethers.getContractAt(
     'GroupGovernor',
@@ -103,6 +128,7 @@ async function deployFixture() {
   )
   await voteTokenContract.deployed()
 
+  console.log('voteTokenAddress')
   // Let the owner mint his own NFT
   await voteTokenContract.safeMint(owner.address)
   await voteTokenContract.safeMint(voters[0].address)
@@ -171,13 +197,11 @@ describe('Testing of the governor and Token Contract ', function () {
   })
 
   it('voter must pay the minimum to join DAO', async () => {
-    const {
-      governorContract,
-      voters: [voter]
-    } = await loadFixture(deployFixture)
+    const { governorContract, voters } = await loadFixture(deployFixture)
+    const [voter1] = voters
 
     // await usdcTokenContract.approve(governorContract.address, '100')
-    await expect(governorContract.connect(voter).join()).to.revertedWith(
+    await expect(governorContract.connect(voter1).join()).to.revertedWith(
       'Must pay the minimum'
     )
   })
