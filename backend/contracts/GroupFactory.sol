@@ -19,7 +19,9 @@ contract GroupFactory {
   uint public groupCount;
   GroupRegistry[] public groups;
 
-  function createDAO(
+  event DeployGroupGovernor(address);
+
+  function createGroup(
     string memory _name,
     IVotes _token,
     TimelockController _timelock,
@@ -27,7 +29,7 @@ contract GroupFactory {
     uint256 _votingDelay,
     uint256 _votingPeriod,
     uint8 _quorumFraction
-  ) external returns (address) {
+  ) public returns (address) {
     GroupGovernor governor = new GroupGovernor(
       _name,
       _token,
@@ -46,6 +48,8 @@ contract GroupFactory {
     });
     groups.push(group);
     ++groupCount;
+
+    emit DeployGroupGovernor(address(governor));
 
     return address(governor);
   }

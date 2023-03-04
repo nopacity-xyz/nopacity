@@ -41,6 +41,14 @@ async function deployFixture() {
   }
 
   //
+  // Deploy Group Factory
+  //
+
+  const GroupFactory = await ethers.getContractFactory('GroupFactory')
+  const groupFactory = await GroupFactory.deploy()
+  await groupFactory.deployed()
+
+  //
   // Deploy Timelock
   //
 
@@ -62,11 +70,10 @@ async function deployFixture() {
   // Deploy Governor
   //
 
-  const tokenContractAddress = await getNextContractAddress()
-  const GovernorContract = await ethers.getContractFactory('GroupGovernor')
-  const governorContract = await GovernorContract.deploy(
+  const voteTokenContractAddress = await getNextContractAddress()
+  const tx = await groupFactory.createGroup(
     daoName,
-    tokenContractAddress,
+    voteTokenContractAddress,
     timeLockContract.address,
     paymentToken.address,
     votingDelay,
@@ -74,26 +81,33 @@ async function deployFixture() {
     qourumFraction,
     { gasLimit: 30000000 }
   )
-  await governorContract.deployed()
+  const receipt = await tx.wait(0)
+
+  console.log(receipt.events)
+
+  const governorContract = await ethers.getContractAt(
+    'GroupGovernor',
+    governorContractAddress
+  )
 
   //
-  // Deploy Token
+  // Deploy Vote Token
   //
 
-  const TokenContract = await ethers.getContractFactory('TokenContract')
-  const tokenContract = await TokenContract.deploy(
+  const VoteTokenContract = await ethers.getContractFactory('TokenContract')
+  const voteTokenContract = await VoteTokenContract.deploy(
     governorContract.address,
     tokenName,
     tokenSymbol,
     { gasLimit: 30000000 }
   )
-  await tokenContract.deployed()
+  await voteTokenContract.deployed()
 
   // Let the owner mint his own NFT
-  await tokenContract.safeMint(owner.address)
-  await tokenContract.safeMint(voters[0].address)
+  await voteTokenContract.safeMint(owner.address)
+  await voteTokenContract.safeMint(voters[0].address)
   // Transfer the ownership of the token to the governor contract
-  await tokenContract.transferOwnership(governorContract.address)
+  await voteTokenContract.transferOwnership(governorContract.address)
 
   // Debugging Logs:
   // console.log('Payment Token:', paymentToken.address)
@@ -107,7 +121,7 @@ async function deployFixture() {
     paymentToken,
     timeLockContract,
     governorContract,
-    tokenContract,
+    voteTokenContract,
     owner,
     voters
   }
@@ -122,21 +136,21 @@ describe('Testing of the governor and Token Contract ', function () {
   })
 
   it('should provide the owner with an ERC721 token after they deploy', async () => {
-    const { tokenContract, owner } = await loadFixture(deployFixture)
+    const { voteTokenContract, owner } = await loadFixture(deployFixture)
 
     // Owner should have a vote token :
-    const votersTokenBalance = await tokenContract
+    const votersTokenBalance = await voteTokenContract
       .connect(owner)
       .balanceOf(owner.address)
     expect(votersTokenBalance.toString()).equal('1')
 
     // Should automatically delegate vote to self token:
-    const ownerDelegate = await tokenContract.delegates(owner.address)
+    const ownerDelegate = await voteTokenContract.delegates(owner.address)
     expect(ownerDelegate).equal(owner.address)
   })
 
   it('voter can join DAO', async () => {
-    const { governorContract, paymentToken, tokenContract, voters } =
+    const { governorContract, paymentToken, voteTokenContract, voters } =
       await loadFixture(deployFixture)
     const [voter] = voters
 
@@ -148,11 +162,11 @@ describe('Testing of the governor and Token Contract ', function () {
     await governorContract.connect(voter).join()
 
     // Voter should have a vote token
-    const votersTokenBalance = await tokenContract.balanceOf(voter.address)
+    const votersTokenBalance = await voteTokenContract.balanceOf(voter.address)
     expect(votersTokenBalance.toString()).equal('1')
 
     // Should automatically delegate vote to self token:
-    const voterDelegate = await tokenContract.delegates(voter.address)
+    const voterDelegate = await voteTokenContract.delegates(voter.address)
     expect(voterDelegate).equal(voter.address)
   })
 
@@ -184,7 +198,8 @@ describe('Proposal and vote workflow', function () {
   })
 
   it('voter can join DAO', async () => {
-    const { governorContract, paymentToken, tokenContract, voters } = fixtures
+    const { governorContract, paymentToken, voteTokenContract, voters } =
+      fixtures
     const [voter] = voters
 
     // Voter must pay before joining
@@ -195,11 +210,11 @@ describe('Proposal and vote workflow', function () {
     await governorContract.connect(voter).join()
 
     // Voter should have a vote token
-    const votersTokenBalance = await tokenContract.balanceOf(voter.address)
+    const votersTokenBalance = await voteTokenContract.balanceOf(voter.address)
     expect(votersTokenBalance.toString()).equal('1')
 
     // Should automatically delegate vote to self token:
-    const voterDelegate = await tokenContract.delegates(voter.address)
+    const voterDelegate = await voteTokenContract.delegates(voter.address)
     expect(voterDelegate).equal(voter.address)
   })
   it('owner can create proposal', async () => {
