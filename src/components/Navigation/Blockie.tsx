@@ -8,8 +8,8 @@ interface Props {
 export default function Blockie({ address }: Props) {
   return (
     <div style={{ height: '40px' }}>
-      <Image
-        style={{ height: '100%', borderRadius: '5px' }}
+      <img
+        style={{ height: '100%', width: '100%', borderRadius: '5px' }}
         src={makeBlockie(address)}
         alt="Profile Icon"
       />

@@ -131,7 +131,7 @@ const SingleProposalItem = ({
               backgroundColor="green"
               _hover={{
                 textDecoration: 'none',
-                bg: 'gray.400'
+                bg: 'gray.700'
               }}
               color="white"
               opacity="0.5"
