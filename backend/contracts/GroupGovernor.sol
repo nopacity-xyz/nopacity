@@ -10,7 +10,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 import './TokenContract.sol';
 
-contract GovernorContractTimeLock is
+contract GroupGovernor is
   Governor,
   GovernorCountingSimple,
   GovernorVotes,
