@@ -94,8 +94,8 @@ const SingleProposalItem = ({
       backdropFilter="auto"
       backdropBlur="8px"
       border="1px solid rgba(255, 255, 255, 0.4)"
-      borderRadius="20px"
       backgroundColor="rgba(255, 255, 255, 0.1)"
+      borderRadius="20px"
       direction={{ base: 'column', sm: 'row' }}
       overflow="hidden"
       variant="outline"
@@ -128,9 +128,41 @@ const SingleProposalItem = ({
               backdropFilter="auto"
               backdropBlur="8px"
               border="1px solid rgba(255, 255, 255, 0.4)"
-              backgroundColor="rgba(255, 255, 255, 0.5)"
+              backgroundColor="green"
+              _hover={{
+                textDecoration: 'none',
+                bg: 'gray.400'
+              }}
+              color="white"
+              opacity="0.5"
             >
               <Link href="veryInterestingLinkHere">Agree with Idea</Link>
+            </Button>
+            <Button
+              ml="5%"
+              variant="solid"
+              backdropFilter="auto"
+              backdropBlur="8px"
+              border="1px solid rgba(255, 255, 255, 0.4)"
+              backgroundColor="red"
+              _hover={{
+                textDecoration: 'none',
+                bg: 'gray.400'
+              }}
+              color="white"
+              opacity="0.5"
+            >
+              <Link href="veryInterestingLinkHere">Disagree with Idea</Link>
+            </Button>
+            <Button
+              ml="5%"
+              variant="solid"
+              backdropFilter="auto"
+              backdropBlur="8px"
+              border="1px solid rgba(255, 255, 255, 0.4)"
+              backgroundColor="rgba(255, 255, 255, 0.5)"
+            >
+              <Link href="veryInterestingLinkHere">Abstain from Idea</Link>
             </Button>
           </Center>
         </CardBody>
