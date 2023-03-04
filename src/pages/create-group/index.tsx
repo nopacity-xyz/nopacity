@@ -30,11 +30,14 @@ import {
   Text,
   Textarea,
   Tooltip,
-  useDisclosure,
-  useToast
+  useDisclosure
+  // useToast
 } from '@chakra-ui/react'
+import { ethers } from 'ethers'
+import { Magic } from 'magic-sdk'
 import React, { ChangeEvent, useState } from 'react'
 
+import TokenContract from '../../contracts/TokenContract.json'
 import Layout from '../layout'
 
 // interface GroupConfigData {
@@ -52,10 +55,10 @@ import Layout from '../layout'
 // }
 
 export default function CreateGroup() {
-  const toast = useToast()
+  // const toast = useToast()
   const [step, setStep] = useState(1)
   const [progress, setProgress] = useState(33.33)
-  const [deploying, setDeploying] = useState(false)
+  // const [deploying, setDeploying] = useState(false)
   const { isOpen, onToggle } = useDisclosure()
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -74,28 +77,57 @@ export default function CreateGroup() {
   })
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleSubmit = async (e: Event) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
+    // e.preventDefault()
+    const magic = new Magic('pk_live_1E208ADDCC61B99E')
+    const provider = new ethers.providers.Web3Provider(magic.rpcProvider as any)
 
-    console.log(JSON.stringify(GroupData))
-    setDeploying(true)
-    await fetch('/api/deploy', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(GroupData)
-    }).then(() => {
-      setDeploying(false)
-      setStep(3)
-      toast({
-        title: 'Account created.',
-        description: 'Group Deployed! 🎉',
-        status: 'success',
-        duration: 3000,
-        isClosable: true
-      })
-    })
+    // ⭐️ After user is successfully authenticated
+
+    const signer = provider.getSigner()
+
+    const contractABI = TokenContract.abi
+
+    const contractByteCode = TokenContract.bytecode
+    const contractFactory = new ethers.ContractFactory(
+      contractABI,
+      contractByteCode,
+      signer
+    )
+
+    // Deploy contract with "Hello World!" in the constructor
+    const contract = await contractFactory.deploy(
+      ethers.constants.AddressZero,
+      'THIS WORKED WOW',
+      'TWW'
+    )
+
+    // Wait for deployment to finish
+    const receipt = await contract.deployed()
+
+    console.log(receipt)
+
+    // e.preventDefault()
+
+    // console.log(JSON.stringify(GroupData))
+    // setDeploying(true)
+    // await fetch('/api/deploy', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify(GroupData)
+    // }).then(() => {
+    //   setDeploying(false)
+    //   setStep(3)
+    //   toast({
+    //     title: 'Account created.',
+    //     description: 'Group Deployed! 🎉',
+    //     status: 'success',
+    //     duration: 3000,
+    //     isClosable: true
+    //   })
+    // })
   }
 
   return (
@@ -463,22 +495,29 @@ export default function CreateGroup() {
                   border="1px solid rgba(255, 255, 255, 0.4)"
                   backgroundColor="rgba(43, 108, 176, 0.6)"
                   _hover={{ bg: 'rgba(43, 108, 176, 1)' }}
-                  onClick={() => {
-                    toast({
-                      title: 'Account created.',
-                      description: 'Group Deployed! 🎉',
-                      status: 'success',
-                      duration: 3000,
-                      isClosable: true
-                    })
-                  }}
+                  onClick={
+                    () => {
+                      handleSubmit()
+                        .then(() => console.log('this will succeed'))
+                        .catch(err => console.error(err))
+                    }
+                    //   () => {
+                    //   toast({
+                    //     title: 'Account created.',
+                    //     description: 'Group Deployed! 🎉',
+                    //     status: 'success',
+                    //     duration: 3000,
+                    //     isClosable: true
+                    //   })
+                    // }
+                  }
                 >
                   Deploy 🚀
                 </Button>
               ) : (
                 <Button
                   w="7rem"
-                  isLoading={deploying}
+                  // isLoading={deploying}
                   isDisabled={step === 3}
                   onClick={() => {
                     setStep(step + 1)
