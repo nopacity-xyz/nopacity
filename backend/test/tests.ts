@@ -1,6 +1,5 @@
 import { loadFixture, mine } from '@nomicfoundation/hardhat-network-helpers'
 import { assert, expect } from 'chai'
-import { toUtf8Bytes } from 'ethers/lib/utils'
 import { ethers } from 'hardhat'
 
 const { parseEther } = ethers.utils
@@ -52,7 +51,7 @@ async function deployFixture() {
   const timeLockContract = await TimeLockContract.deploy(
     timelockDelay,
     [governorContractAddress],
-    ['0x0000000000000000000000000000000000000000'],
+    ['0x0000000000000000000000000000000000000000', governorContractAddress],
     owner.address,
     parseEther('100'),
     { gasLimit: 30000000 }
@@ -97,6 +96,7 @@ async function deployFixture() {
   await tokenContract.transferOwnership(governorContract.address)
 
   // Debugging Logs:
+  // console.log('Payment Token:', paymentToken.address)
   // console.log('Owner:', owner.address)
   // console.log('Voter:', voters[0].address)
   // console.log('Token Contract: ' + tokenContract.address)
@@ -170,11 +170,13 @@ describe('Testing of the governor and Token Contract ', function () {
 })
 
 describe('Proposal and vote workflow', function () {
+  const proposalAmount = ethers.utils.parseEther('10')
+
   let fixtures: Awaited<ReturnType<typeof deployFixture>>
   let descriptionHash: string
   let proposalId: string
   let target: string
-  let calldata: Uint8Array
+  let calldata: string
   let description: string
 
   this.beforeAll(async () => {
@@ -200,17 +202,15 @@ describe('Proposal and vote workflow', function () {
     const voterDelegate = await tokenContract.delegates(voter.address)
     expect(voterDelegate).equal(voter.address)
   })
-  it('token holders can delegate', async () => {})
   it('owner can create proposal', async () => {
     const { governorContract, owner, paymentToken, voters } = fixtures
     const [voter] = voters
     // Prepare proposal payload:
     target = paymentToken.address
-    const calldataEncoding = paymentToken.interface.encodeFunctionData(
-      'transfer',
-      [voter.address, 100]
-    )
-    calldata = toUtf8Bytes(calldataEncoding)
+    calldata = paymentToken.interface.encodeFunctionData('transfer', [
+      voter.address,
+      proposalAmount
+    ])
     description = 'This is to pay one of the voters to fill a pothole'
     descriptionHash = ethers.utils.id(description)
 
@@ -231,13 +231,14 @@ describe('Proposal and vote workflow', function () {
     // Get proposalId
     const eventData = event.decode(event.data, event.topics)
     proposalId = eventData.proposalId
-
-    // mine a block for the proposal to pass the voting delay
-    await mine(votingDelay)
   })
   it('Should allow the delegates to vote on proposal', async () => {
     const { governorContract, owner, voters } = fixtures
     const [voter] = voters
+
+    // mine a block for the proposal to pass the voting delay
+    await mine(votingDelay)
+
     const voteTx = await governorContract.connect(voter).castVote(proposalId, 1)
     const ownerVoteTx = await governorContract
       .connect(owner)
@@ -247,9 +248,11 @@ describe('Proposal and vote workflow', function () {
   })
 
   it('Should execute a proposal', async () => {
-    const { governorContract, voters } = fixtures
+    const { governorContract, voters, paymentToken } = fixtures
     const [voter] = voters
     await mine(votingPeriod)
+
+    const beforeBalance = await paymentToken.balanceOf(voter.address)
 
     await governorContract
       .connect(voter)
@@ -261,5 +264,9 @@ describe('Proposal and vote workflow', function () {
     await governorContract
       .connect(voter)
       .execute([target], [0], [calldata], descriptionHash)
+
+    const afterBalance = await paymentToken.balanceOf(voter.address)
+
+    expect(afterBalance.eq(beforeBalance.add(proposalAmount)))
   })
 })
