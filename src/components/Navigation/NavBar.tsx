@@ -60,7 +60,10 @@ export default function NavBar() {
 
   useEffect(() => {
     const magic = new Magic('pk_live_1E208ADDCC61B99E', {
-      network: 'goerli'
+      network: {
+        rpcUrl: 'https://polygon-rpc.com/', // or https://matic-mumbai.chainstacklabs.com for testnet
+        chainId: 137 // or 80001 for polygon testnet
+      }
     })
     setMagic(magic)
 

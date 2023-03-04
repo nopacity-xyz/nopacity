@@ -37,7 +37,7 @@ import { ethers } from 'ethers'
 import { Magic } from 'magic-sdk'
 import React, { ChangeEvent, useState } from 'react'
 
-import TokenContract from '../../contracts/TokenContract.json'
+import Factory from '../../contracts/Factory.json'
 import Layout from '../layout'
 
 // interface GroupConfigData {
@@ -86,9 +86,18 @@ export default function CreateGroup() {
 
     const signer = provider.getSigner()
 
-    const contractABI = TokenContract.abi
+    const contractABI = Factory.abi
 
-    const contractByteCode = TokenContract.bytecode
+    const contractByteCode = Factory.bytecode
+
+    const _minDelay = 300
+    const _minAmount = 20
+    const _daoName = 'Poop'
+    const _votingPeriod = 5040
+    const _quorumFraction = 51
+    const _tokenName = 'POP'
+    const _tokenSymbol = 'PP'
+
     const contractFactory = new ethers.ContractFactory(
       contractABI,
       contractByteCode,
@@ -96,17 +105,24 @@ export default function CreateGroup() {
     )
 
     // Deploy contract with "Hello World!" in the constructor
-    const contract = await contractFactory.deploy(
-      ethers.constants.AddressZero,
-      'THIS WORKED WOW',
-      'TWW'
-    )
+    const contract = await contractFactory.deploy()
 
     // Wait for deployment to finish
     const receipt = await contract.deployed()
 
     console.log(receipt)
 
+    const tx = await contract.createDAO(
+      _minDelay,
+      _minAmount,
+      _daoName,
+      _votingPeriod,
+      _quorumFraction,
+      _tokenName,
+      _tokenSymbol
+    )
+
+    console.log(tx)
     // e.preventDefault()
 
     // console.log(JSON.stringify(GroupData))
