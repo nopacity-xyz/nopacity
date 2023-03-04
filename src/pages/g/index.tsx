@@ -44,6 +44,7 @@ const SingleGroupItem = ({
       border="1px solid rgba(255, 255, 255, 0.4)"
       borderRadius="20px"
       backgroundColor="rgba(255, 255, 255, 0.2)"
+      shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
       direction={{ base: 'column', sm: 'row' }}
       overflow="hidden"
       variant="outline"
@@ -61,11 +62,16 @@ const SingleGroupItem = ({
           <Text py="2">{numMembers}</Text>
         </CardBody>
         <CardFooter>
-          <Link href={`/g/${groupAddress}`}>
-            <Button variant="solid" colorScheme="blue">
-              View Group
-            </Button>
-          </Link>
+          <Button
+            variant="solid"
+            backgroundColor="#04212C"
+            color="white"
+            _hover={{
+              backgroundColor: 'gray.500'
+            }}
+          >
+            <Link href={`/g/${groupAddress}`}>View Group</Link>
+          </Button>
         </CardFooter>
       </Stack>
     </Card>

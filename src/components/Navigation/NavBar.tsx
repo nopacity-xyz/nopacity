@@ -132,7 +132,7 @@ export default function NavBar() {
           </HStack>
           <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }} />
         </HStack>
-        <Flex alignItems="center">
+        <Flex alignItems="center" backdropBlur="8px">
           {!isAuth ? (
             <Button
               onClick={handleLogIn}
@@ -146,14 +146,46 @@ export default function NavBar() {
             </Button>
           ) : (
             <Menu>
-              <MenuButton as={Button} variant="link" cursor="pointer" minW={0}>
+              <MenuButton
+                as={Button}
+                variant="link"
+                cursor="pointer"
+                minW={0}
+                border="1px"
+                borderColor="rgba(255,255,255,0.7)"
+                shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
+              >
                 <Blockie address={user ?? ''} />
               </MenuButton>
-              <MenuList>
+              <MenuList
+                backdropFilter="auto"
+                backdropBlur="8px"
+                border="1px solid rgba(255, 255, 255, 0.4)"
+                backgroundColor="rgba(255, 255, 255, 0.3)"
+                shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
+              >
                 <MenuDivider />
-                <MenuItem onClick={handleClickWallet}>My Profile</MenuItem>
+                <MenuItem
+                  onClick={handleClickWallet}
+                  backdropFilter="auto"
+                  backdropBlur="0px"
+                  border="1px solid rgba(255, 255, 255, 0)"
+                  backgroundColor="rgba(255, 255, 255, 0)"
+                  borderRadius="10px"
+                >
+                  My Profile
+                </MenuItem>
                 <MenuDivider />
-                <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
+                <MenuItem
+                  onClick={handleLogOut}
+                  backdropFilter="auto"
+                  backdropBlur="0px"
+                  border="1px solid rgba(255, 255, 255, 0)"
+                  backgroundColor="rgba(255, 255, 255, 0)"
+                  borderRadius="10px"
+                >
+                  Log Out
+                </MenuItem>
               </MenuList>
             </Menu>
           )}

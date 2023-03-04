@@ -39,6 +39,7 @@ const MakeProposalItem = () => {
         direction={{ base: 'column', sm: 'row' }}
         overflow="hidden"
         variant="outline"
+        shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
       >
         <CardBody className="nopaque">
           <Skeleton>
@@ -63,6 +64,10 @@ const MakeProposalItem = () => {
               color="white"
               border="1px solid rgba(255, 255, 255, 0.4)"
               backgroundColor="rgba(123, 209, 236,1)"
+              _hover={{
+                textDecoration: 'none',
+                bg: 'teal.900'
+              }}
             >
               <Link href="veryInterestingLinkHere">Create New Idea</Link>
             </Button>
@@ -95,6 +100,7 @@ const SingleProposalItem = ({
       backdropBlur="8px"
       border="1px solid rgba(255, 255, 255, 0.4)"
       backgroundColor="rgba(255, 255, 255, 0.1)"
+      shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
       borderRadius="20px"
       direction={{ base: 'column', sm: 'row' }}
       overflow="hidden"
@@ -131,7 +137,7 @@ const SingleProposalItem = ({
               backgroundColor="green"
               _hover={{
                 textDecoration: 'none',
-                bg: 'gray.700'
+                bg: 'teal.900'
               }}
               color="white"
               opacity="0.5"
@@ -147,7 +153,7 @@ const SingleProposalItem = ({
               backgroundColor="red"
               _hover={{
                 textDecoration: 'none',
-                bg: 'gray.400'
+                bg: 'red.900'
               }}
               color="white"
               opacity="0.5"

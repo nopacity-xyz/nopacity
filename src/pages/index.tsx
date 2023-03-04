@@ -44,8 +44,9 @@ export default function Home() {
                 textAlign="left"
                 fontWeight="bold"
                 mb="2%"
+                color="#052733"
                 size="3xl"
-                textShadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),5px 5px 15px rgba(0,0,0,0.3)"
+                textShadow="0px 0px 5px rgba(5, 39, 51,0.3), 1px 1px 5px rgba(5, 39, 51,0.3),5px 5px 15px rgba(0,0,0,0.3)"
                 // color="white"
               >
                 Create value to fund your endeavor
@@ -55,8 +56,9 @@ export default function Home() {
                 w="100%"
                 textAlign="left"
                 fontWeight="normal"
+                color="#052733"
                 mb="2%"
-                textShadow="0px 0px 5px #fff, 1px 1px 5px #ccc, 5px 5px 10px rgba(0,0,0,0.3)"
+                textShadow="0px 0px 5px #fff, 1px 1px 5px rgba(5, 39, 51, 0.3), 5px 5px 10px rgba(5, 39, 51,0.3)"
                 // textShadow="5px 10px 15px rgba(0,0,0,0.4)"
               >
                 (not the other way around)
@@ -70,6 +72,7 @@ export default function Home() {
                   _hover={{
                     backgroundColor: 'gray.500'
                   }}
+                  shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
                 >
                   Create a group
                 </Button>

@@ -162,11 +162,11 @@ export default function CreateGroup() {
               textAlign="left"
               fontWeight="bold"
               mb="2%"
-              color="black"
+              color="#052733"
             >
               Configure Group
             </Heading>
-            <Flex color="black">
+            <Flex color="#052733">
               {/* GROUP NAME */}
               <FormControl mr="5%" isRequired>
                 <Flex>
@@ -178,6 +178,7 @@ export default function CreateGroup() {
                 <Input
                   id="group-name"
                   placeholder="The Muffin Man"
+                  borderColor="#052733"
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     setGroupData(prevState => ({
                       ...prevState,
@@ -203,6 +204,7 @@ export default function CreateGroup() {
                   id="group-description"
                   placeholder="The one on Drury Lane"
                   rows={2}
+                  borderColor="#052733"
                   onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
                     setGroupData(prevState => ({
                       ...prevState,
@@ -235,6 +237,7 @@ export default function CreateGroup() {
                     min={1}
                     max={100}
                     size="md"
+                    borderColor="#052733"
                     clampValueOnBlur={false}
                     onChange={(e: string) => {
                       setGroupData(prevState => ({
@@ -250,8 +253,8 @@ export default function CreateGroup() {
                   >
                     <NumberInputField />
                     <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
+                      <NumberIncrementStepper borderColor="#052733" />
+                      <NumberDecrementStepper borderColor="#052733" />
                     </NumberInputStepper>
                   </NumberInput>
                 </FormControl>
@@ -262,7 +265,7 @@ export default function CreateGroup() {
                   </FormLabel>
                   <Select
                     className="voting-period-time"
-                    // placeholder="weeks"
+                    borderColor="#052733"
                     onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                       console.log(e.target.value)
                       setGroupData(prevState => ({
@@ -359,7 +362,8 @@ export default function CreateGroup() {
                 backdropFilter="auto"
                 backdropBlur="8px"
                 border="1px solid rgba(255, 255, 255, 0.4)"
-                backgroundColor="rgba(255, 255, 255, 0.2)"
+                backgroundColor="rgba(255, 255, 255, 0.1)"
+                shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
               >
                 <CardHeader>
                   <Heading size="md">Group Data</Heading>
@@ -479,6 +483,11 @@ export default function CreateGroup() {
                 }}
                 isDisabled={step === 1}
                 colorScheme="teal"
+                _hover={{
+                  bg: 'rgba(122, 209, 237, 1)',
+                  color: 'white',
+                  borderColor: 'rgba(255,255,255,0)'
+                }}
                 variant="outline"
                 w="7rem"
                 mr="5%"
@@ -494,7 +503,11 @@ export default function CreateGroup() {
                   backdropBlur="8px"
                   border="1px solid rgba(255, 255, 255, 0.4)"
                   backgroundColor="rgba(43, 108, 176, 0.6)"
-                  _hover={{ bg: 'rgba(43, 108, 176, 1)' }}
+                  _hover={{
+                    bg: 'rgba(5, 39, 51, 1)',
+                    shadow:
+                      '0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),8px 8px 15px rgba(0,0,0,0.3)'
+                  }}
                   onClick={
                     () => {
                       handleSubmit()
