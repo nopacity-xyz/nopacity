@@ -15,6 +15,22 @@ const qourumFraction = 1
 async function deployFixture() {
   const [owner, ...voters] = await ethers.getSigners()
 
+  // Skeleton Governor
+  const Governor = await ethers.getContractFactory('OurGovernor')
+  const governor = await Governor.deploy()
+  await governor.deployed()
+
+  console.log(`Skeleton Governor deployed to ${governor.address}`)
+
+  const OurCloneFactory = await ethers.getContractFactory('OurCloneFactory')
+  const cloneFactory = await OurCloneFactory.deploy(governor.address)
+  await cloneFactory.deployed()
+
+  console.log(`Clone Factory deployed to ${cloneFactory.address}`)
+
+  // Factory Instance using the Clone Factory address
+  const factoryInstance = await OurCloneFactory.attach(cloneFactory.address)
+
   //
   // Helpers
   //
@@ -23,6 +39,15 @@ async function deployFixture() {
     return ethers.utils.getContractAddress({
       from: owner.address,
       nonce: (await owner.getTransactionCount()) + 1 + extraOffset
+    })
+  }
+
+  const number = (await factoryInstance.getArrayLength()).toNumber()
+
+  const getNextAddressFromFactory = async (extraOffset: number = 0) => {
+    return ethers.utils.getContractAddress({
+      from: factoryInstance.address,
+      nonce: 1
     })
   }
 
@@ -44,7 +69,8 @@ async function deployFixture() {
   // Deploy Timelock
   //
 
-  const governorContractAddress = await getNextContractAddress()
+  const governorContractAddress = await getNextAddressFromFactory()
+
   const TimeLockContract = await ethers.getContractFactory(
     'MyTimelockController'
   )
@@ -63,18 +89,30 @@ async function deployFixture() {
   //
 
   const tokenContractAddress = await getNextContractAddress()
-  const GovernorContract = await ethers.getContractFactory('GroupGovernor')
-  const governorContract = await GovernorContract.deploy(
+  // const GovernorContract = await ethers.getContractFactory('OurCloneFactory')
+  // const governorContract = await GovernorContract.deploy(
+  //   daoName,
+  //   tokenContractAddress,
+  //   timeLockContract.address,
+  //   paymentToken.address,
+  //   votingDelay,
+  //   votingPeriod,
+  //   qourumFraction,
+  //   { gasLimit: 30000000 }
+  // )
+  // await governorContract.deployed()
+
+  const deployedGovernor = await factoryInstance.createNewGovernor(
     daoName,
     tokenContractAddress,
     timeLockContract.address,
     paymentToken.address,
     votingDelay,
     votingPeriod,
-    qourumFraction,
-    { gasLimit: 30000000 }
+    qourumFraction
   )
-  await governorContract.deployed()
+
+  const governorContract = await factoryInstance.getCloneFromArray()
 
   //
   // Deploy Token
@@ -82,7 +120,7 @@ async function deployFixture() {
 
   const TokenContract = await ethers.getContractFactory('TokenContract')
   const tokenContract = await TokenContract.deploy(
-    governorContract.address,
+    governorContract,
     tokenName,
     tokenSymbol,
     { gasLimit: 30000000 }

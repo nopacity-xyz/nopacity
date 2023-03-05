@@ -2,40 +2,72 @@ import { ethers } from 'hardhat'
 
 async function main() {
   const [owner] = await ethers.getSigners()
+  const daoName = 'ETHSD'
+  const votingDelay = 1
+  const votingPeriod = 50400 // 1 week
+  const tokenName = 'OurToken'
+  const tokenSymbol = 'OUT'
+  const timelockDelay = 300 // 1 hour
+  const qourumFraction = 1
 
-  const transactionCount = await owner.getTransactionCount()
+  // governor
+  const OurGovernor = await ethers.getContractFactory('OurGovernor')
+  const ourgovernor = await OurGovernor.deploy()
+  await ourgovernor.deployed()
 
-  // gets the address of the token before it is deployed
-  const futureTokenAddress = ethers.utils.getContractAddress({
-    from: owner.address,
-    nonce: transactionCount + 1
-  })
-  const futureTimelockAddress = ethers.utils.getContractAddress({
-    from: owner.address,
-    nonce: transactionCount + 2
-  })
+  console.log(`Governor deployed to ${ourgovernor.address}`)
 
-  // Voting period is in blocks
-  const votingPeriod = 1000
-  // Fraction is in percentages (10 means 10%, etc)
-  const quorumFraction = 50
+  // timelock
+  const OurTime = await ethers.getContractFactory('OurTimeLock')
+  const ourtime = await OurTime.deploy()
+  await ourtime.deployed()
 
-  const MyGovernor = await ethers.getContractFactory('GroupGovernor')
-  const governor = await MyGovernor.deploy(
-    'Lil Dao Wow',
-    futureTokenAddress,
-    futureTimelockAddress,
+  console.log(`Governor deployed to ${ourtime.address}`)
+
+  /// 721
+  const Our721 = await ethers.getContractFactory('OurERC721')
+  const our721 = await Our721.deploy()
+  await our721.deployed()
+
+  console.log(`Governor deployed to ${our721.address}`)
+
+  const OurCloneFactory = await ethers.getContractFactory('OurCloneFactory')
+  const cloneFactory = await OurCloneFactory.deploy(
+    ourgovernor.address,
+    ourtime.address,
+    our721.address
+  )
+  await cloneFactory.deployed()
+
+  console.log(cloneFactory.address)
+
+  const factoryInstance = await OurCloneFactory.attach(cloneFactory.address)
+
+  const deployedGovernor = await factoryInstance.createNewGovernor(
+    daoName,
+    governor.address,
+    governor.address,
+    governor.address,
+    votingDelay,
     votingPeriod,
-    quorumFraction
+    qourumFraction
   )
 
-  const MyToken = await ethers.getContractFactory('MyToken')
-  const token = await MyToken.deploy(governor.address, 'thisISATOKEN', 'LOL')
+  // console.log(await factoryInstance.getCloneFromArray())
 
-  console.log(
-    `Governor deployed to ${governor.address}`,
-    `Token deployed to ${token.address}`
-  )
+  console.log(deployedGovernor)
+  console.log('HERE ')
+  console.log((await factoryInstance.getArrayLength()).toNumber())
+
+  // cloneFactory.createNewGovernor(
+  //   daoName,
+  //   governor.address,
+  //   governor.address,
+  //   governor.address,
+  //   votingDelay,
+  //   votingPeriod,
+  //   qourumFraction
+  // )
 }
 
 main().catch(error => {
