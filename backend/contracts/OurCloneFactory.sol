@@ -6,6 +6,7 @@ import './OurGovernor.sol';
 import 'hardhat/console.sol';
 import './OurTimeLock.sol';
 import './OurERC721.sol';
+import 'hardhat/console.sol';
 
 contract OurCloneFactory {
   address public governorImplementationContract;
@@ -15,6 +16,15 @@ contract OurCloneFactory {
   address[] public allGovernors;
   address[] public allTimeLocks;
   address[] public allERC721;
+
+  struct daoInformation {
+    address governor;
+    address timelock;
+    address erc721;
+    address owner;
+  }
+
+  daoInformation[] DAOS;
 
   constructor(
     address _governorImplementationContract,
@@ -29,6 +39,9 @@ contract OurCloneFactory {
   event NewGovernorClone(address _governor);
   event NewTimeLockClone(address _timeLock);
   event NewERC721Clone(address _erc721);
+
+  address[] proposers;
+  address[] executors;
 
   //Creates new Governor Contract Clone
   function createNewGovernor(
@@ -59,8 +72,6 @@ contract OurCloneFactory {
   // Creates New Time Lock Contract Clone
   function createNewTimeLock(
     uint256 minDelay,
-    address[] memory proposers,
-    address[] memory executors,
     address admin,
     uint256 _minAmount
   ) public returns (address) {
@@ -103,9 +114,49 @@ contract OurCloneFactory {
     return allTimeLocks[_index];
   }
 
+  function getTokenCloneFromArray(uint _index) public view returns (address) {
+    return allERC721[_index];
+  }
+
   function getArrayLength() public view returns (uint) {
     return allGovernors.length;
   }
 
-  
+  function createDAO(
+    address determinedGovernorAddress,
+    string memory _name,
+    IVotesUpgradeable determinedTokenAddress,
+    TimelockControllerUpgradeable determinedTimeAddress,
+    IERC20 _paymentToken,
+    uint256 __votingDelay,
+    uint256 __votingPeriod,
+    uint8 _quorumFraction,
+    string memory _tokenName,
+    string memory _tokenSymbol
+  ) public returns (address) {
+    executors.push(address(0));
+    proposers.push(determinedGovernorAddress);
+
+    address timeAddress = createNewTimeLock(300, tx.origin, 0);
+
+    address govAddress = createNewGovernor(
+      _name,
+      determinedTokenAddress,
+      determinedTimeAddress,
+      _paymentToken,
+      __votingDelay,
+      __votingPeriod,
+      _quorumFraction
+    );
+
+    address tokenAddress = createNewERC721(
+      determinedGovernorAddress,
+      _tokenName,
+      _tokenSymbol
+    );
+
+    DAOS.push(daoInformation(govAddress, timeAddress, tokenAddress, tx.origin));
+
+    return govAddress;
+  }
 }
