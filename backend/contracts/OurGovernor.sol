@@ -20,11 +20,13 @@ contract OurGovernor is
   uint256 _votingDelay;
   uint256 _votingPeriod;
   address public paymentToken;
+  string public daoDescription;
 
   uint minAmount = 100e18;
 
   function initialize(
     string memory _name,
+    string memory _daoDescription,
     IVotesUpgradeable _token,
     TimelockControllerUpgradeable _timelock,
     IERC20 _paymentToken,
@@ -39,6 +41,7 @@ contract OurGovernor is
     _votingDelay = __votingDelay;
     _votingPeriod = __votingPeriod;
     paymentToken = address(_paymentToken);
+    daoDescription = _daoDescription;
   }
 
   function join() external {

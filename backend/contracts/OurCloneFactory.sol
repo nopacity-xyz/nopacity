@@ -46,6 +46,7 @@ contract OurCloneFactory {
   //Creates new Governor Contract Clone
   function createNewGovernor(
     string memory _name,
+    string memory _description,
     IVotesUpgradeable _token,
     TimelockControllerUpgradeable _timelock,
     IERC20 _paymentToken,
@@ -56,6 +57,7 @@ contract OurCloneFactory {
     address instance = Clones.clone(governorImplementationContract);
     OurGovernor(payable(instance)).initialize(
       _name,
+      _description,
       _token,
       _timelock,
       _paymentToken,
@@ -125,6 +127,7 @@ contract OurCloneFactory {
   function createDAO(
     address determinedGovernorAddress,
     string memory _name,
+    string memory _description,
     IVotesUpgradeable determinedTokenAddress,
     TimelockControllerUpgradeable determinedTimeAddress,
     IERC20 _paymentToken,
@@ -141,6 +144,7 @@ contract OurCloneFactory {
 
     address govAddress = createNewGovernor(
       _name,
+      _description,
       determinedTokenAddress,
       determinedTimeAddress,
       _paymentToken,
