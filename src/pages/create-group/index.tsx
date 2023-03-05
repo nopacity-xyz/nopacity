@@ -30,8 +30,8 @@ import {
   Text,
   Textarea,
   Tooltip,
-  useDisclosure
-  // useToast
+  useDisclosure,
+  useToast
 } from '@chakra-ui/react'
 import { ethers } from 'ethers'
 import { Magic } from 'magic-sdk'
@@ -55,7 +55,7 @@ import Layout from '../layout'
 // }
 
 export default function CreateGroup() {
-  // const toast = useToast()
+  const toast = useToast()
   const [step, setStep] = useState(1)
   const [progress, setProgress] = useState(33.33)
   // const [deploying, setDeploying] = useState(false)
@@ -79,6 +79,7 @@ export default function CreateGroup() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSubmit = async () => {
     // e.preventDefault()
+    // Authenticate User
     const magic = new Magic('pk_live_1E208ADDCC61B99E')
     const provider = new ethers.providers.Web3Provider(magic.rpcProvider as any)
 
@@ -107,6 +108,15 @@ export default function CreateGroup() {
 
     console.log(receipt)
 
+    if (receipt !== null) {
+      toast({
+        title: 'Group Deployed!',
+        description: 'Group Deployed! 🎉',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
+    }
     // e.preventDefault()
 
     // console.log(JSON.stringify(GroupData))
@@ -183,7 +193,6 @@ export default function CreateGroup() {
                     setGroupData(prevState => ({
                       ...prevState,
                       governor: {
-                        // copy all other key-value pairs of food object
                         ...prevState.governor,
                         groupName: e.target.value
                       }
@@ -209,7 +218,6 @@ export default function CreateGroup() {
                     setGroupData(prevState => ({
                       ...prevState,
                       governor: {
-                        // copy all other key-value pairs of food object
                         ...prevState.governor,
                         groupDescription: e.target.value
                       }
@@ -243,7 +251,6 @@ export default function CreateGroup() {
                       setGroupData(prevState => ({
                         ...prevState,
                         governor: {
-                          // copy all other key-value pairs of food object
                           ...prevState.governor,
                           votingQuantity: parseInt(e)
                         }
@@ -271,7 +278,6 @@ export default function CreateGroup() {
                       setGroupData(prevState => ({
                         ...prevState,
                         governor: {
-                          // copy all other key-value pairs of food object
                           ...prevState.governor,
                           votingPeriod: e.target.value
                         }
@@ -332,7 +338,6 @@ export default function CreateGroup() {
                         setGroupData(prevState => ({
                           ...prevState,
                           governor: {
-                            // copy all other key-value pairs of food object
                             ...prevState.governor,
                             quorumFraction: parseInt(e)
                           }
@@ -508,22 +513,11 @@ export default function CreateGroup() {
                     shadow:
                       '0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),8px 8px 15px rgba(0,0,0,0.3)'
                   }}
-                  onClick={
-                    () => {
-                      handleSubmit()
-                        .then(() => console.log('this will succeed'))
-                        .catch(err => console.error(err))
-                    }
-                    //   () => {
-                    //   toast({
-                    //     title: 'Account created.',
-                    //     description: 'Group Deployed! 🎉',
-                    //     status: 'success',
-                    //     duration: 3000,
-                    //     isClosable: true
-                    //   })
-                    // }
-                  }
+                  onClick={() => {
+                    handleSubmit()
+                      .then(() => console.log('this will succeed'))
+                      .catch(err => console.error(err))
+                  }}
                 >
                   Deploy 🚀
                 </Button>

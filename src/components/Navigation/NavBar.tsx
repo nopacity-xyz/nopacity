@@ -152,7 +152,7 @@ export default function NavBar() {
                 cursor="pointer"
                 minW={0}
                 border="1px"
-                borderColor="rgba(255,255,255,0.7)"
+                borderColor="rgba(255,255,255,0.8)"
                 shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
               >
                 <Blockie address={user ?? ''} />
