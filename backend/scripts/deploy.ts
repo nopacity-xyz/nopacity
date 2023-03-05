@@ -1,14 +1,15 @@
 import { ethers } from 'hardhat'
 
 async function main() {
-  const [owner] = await ethers.getSigners()
-  const daoName = 'ETHSD'
-  const votingDelay = 1
-  const votingPeriod = 50400 // 1 week
-  const tokenName = 'OurToken'
-  const tokenSymbol = 'OUT'
-  const timelockDelay = 300 // 1 hour
-  const qourumFraction = 1
+  // const [owner] = await ethers.getSigners()
+  // const daoName = 'ETHSD'
+  // const daoDescription = 'ETHSD'
+  // const votingDelay = 1
+  // const votingPeriod = 50400 // 1 week
+  // const tokenName = 'OurToken'
+  // const tokenSymbol = 'OUT'
+  // const timelockDelay = 300 // 1 hour
+  // const qourumFraction = 1
 
   // governor
   const OurGovernor = await ethers.getContractFactory('OurGovernor')
@@ -43,19 +44,20 @@ async function main() {
 
   const factoryInstance = await OurCloneFactory.attach(cloneFactory.address)
 
-  const deployedGovernor = await factoryInstance.createNewGovernor(
-    daoName,
-    governor.address,
-    governor.address,
-    governor.address,
-    votingDelay,
-    votingPeriod,
-    qourumFraction
-  )
+  // const deployedGovernor = await factoryInstance.createNewGovernor(
+  //   daoName,
+  //   daoDescription,
+  //   governor.address,
+  //   governor.address,
+  //   governor.address,
+  //   votingDelay,
+  //   votingPeriod,
+  //   qourumFraction
+  // )
 
   // console.log(await factoryInstance.getCloneFromArray())
 
-  console.log(deployedGovernor)
+  // console.log(deployedGovernor)
   console.log('HERE ')
   console.log((await factoryInstance.getArrayLength()).toNumber())
 
