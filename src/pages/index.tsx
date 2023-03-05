@@ -49,7 +49,7 @@ export default function Home() {
                 textShadow="0px 0px 5px rgba(5, 39, 51,0.3), 1px 1px 5px rgba(5, 39, 51,0.3),5px 5px 15px rgba(0,0,0,0.3)"
                 // color="white"
               >
-                Create value to fund your endeavor
+                Create a group effort
               </Heading>
               <Heading
                 size="lg"
@@ -61,7 +61,7 @@ export default function Home() {
                 textShadow="0px 0px 5px #fff, 1px 1px 5px rgba(5, 39, 51, 0.3), 5px 5px 10px rgba(5, 39, 51,0.3)"
                 // textShadow="5px 10px 15px rgba(0,0,0,0.4)"
               >
-                (not the other way around)
+                (and actually be heard)
               </Heading>
               <p style={{ flexGrow: 1 }} />
               <Link href="/create-group">
