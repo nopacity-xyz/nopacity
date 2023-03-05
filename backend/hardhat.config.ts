@@ -2,6 +2,8 @@ import '@nomicfoundation/hardhat-toolbox'
 import 'hardhat-watcher'
 
 import { HardhatUserConfig } from 'hardhat/config'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config()
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -11,6 +13,12 @@ const config: HardhatUserConfig = {
         enabled: true,
         runs: 1
       }
+    }
+  },
+  networks: {
+    goerli: {
+      url: process.env.RPC_URL,
+      accounts: [process.env.PRIVATE_KEY as any]
     }
   },
   watcher: {

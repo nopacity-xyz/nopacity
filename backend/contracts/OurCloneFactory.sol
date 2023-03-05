@@ -141,6 +141,7 @@ contract OurCloneFactory {
     proposers.push(determinedGovernorAddress);
 
     address timeAddress = createNewTimeLock(300, tx.origin, 0);
+    require(address(determinedTimeAddress) == timeAddress, 'time Failed');
 
     address govAddress = createNewGovernor(
       _name,
@@ -152,12 +153,17 @@ contract OurCloneFactory {
       __votingPeriod,
       _quorumFraction
     );
+    require(
+      address(determinedGovernorAddress) == govAddress,
+      'Governor Failed'
+    );
 
     address tokenAddress = createNewERC721(
       determinedGovernorAddress,
       _tokenName,
       _tokenSymbol
     );
+    require(address(determinedTokenAddress) == tokenAddress, 'token Failed');
 
     DAOS.push(daoInformation(govAddress, timeAddress, tokenAddress, tx.origin));
 

@@ -37,7 +37,7 @@ import { ethers } from 'ethers'
 import { Magic } from 'magic-sdk'
 import React, { ChangeEvent, useState } from 'react'
 
-import TokenContract from '../../contracts/TokenContract.json'
+import OurCloneFactory from '../../contracts/OurCloneFactory.json'
 import Layout from '../layout'
 
 // interface GroupConfigData {
@@ -80,35 +80,89 @@ export default function CreateGroup() {
   const handleSubmit = async () => {
     // e.preventDefault()
     // Authenticate User
-    const magic = new Magic('pk_live_1E208ADDCC61B99E')
+    const magic = new Magic('pk_live_1E208ADDCC61B99E', {
+      network: 'goerli'
+    })
     const provider = new ethers.providers.Web3Provider(magic.rpcProvider as any)
+    const feeData = await provider.getFeeData()
+    // const gasData = await provider.getGasPrice()
+    // const gasEstimateData = await provider.estimateGas()
+    // const gasPrice = ethers.utils.formatUnits(gasData, 'gwei')
+    const gasLimit = ethers.utils.formatUnits(
+      feeData.maxFeePerGas as any,
+      'gwei'
+    )
+    // const gasLimit = ethers.utils.formatUnits(feeData.maxFeePerGas, 'wei')
+    console.log(gasLimit)
+    console.log(typeof gasLimit)
 
     // ⭐️ After user is successfully authenticated
-
     const signer = provider.getSigner()
 
-    const contractABI = TokenContract.abi
-
-    const contractByteCode = TokenContract.bytecode
-    const contractFactory = new ethers.ContractFactory(
-      contractABI,
-      contractByteCode,
+    const factoryInstance = new ethers.Contract(
+      '0xFE6bDAf1D3F0E10e2cDFD451156F6253368F23a8',
+      OurCloneFactory.abi,
       signer
     )
 
-    // Deploy contract with "Hello World!" in the constructor
-    const contract = await contractFactory.deploy(
-      ethers.constants.AddressZero,
-      'THIS WORKED WOW',
-      'TWW'
+    const getNextAddressFromFactory = async (number: any) => {
+      return ethers.utils.getContractAddress({
+        from: factoryInstance.address,
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+        nonce: number + 1
+      })
+    }
+
+    // const amountDeploy = await factoryInstance.getArrayLength()
+    // const nonce = amountDeploy.toNumber()
+    // console.log('HERE')
+    // console.log(amountDeploy.toNumber())
+
+    const determinedTimeLockAddress = await getNextAddressFromFactory(0)
+    const determinedGovernorAddress = await getNextAddressFromFactory(1)
+    const determinedTokenAddress = await getNextAddressFromFactory(2)
+
+    const timeInSeconds = (quantity: number, period: string) => {
+      let result
+
+      if (period === 'weeks') {
+        result = quantity * 7 * 24 * 60 * 60
+      }
+      if (period === 'days') {
+        result = quantity * 24 * 60 * 60
+      }
+      if (period === 'hours') {
+        result = quantity * 60 * 60
+      }
+      if (period === 'minutes') {
+        result = quantity * 60
+      }
+      return result
+    }
+
+    // Deploy contract group!
+    const contract = await factoryInstance.createDAO(
+      determinedGovernorAddress,
+      GroupData.governor.groupName,
+      GroupData.governor.groupDescription,
+      determinedTokenAddress,
+      determinedTimeLockAddress,
+      '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
+      1,
+      timeInSeconds(
+        GroupData.governor.votingQuantity,
+        GroupData.governor.votingPeriod
+      ),
+      GroupData.governor.quorumFraction,
+      GroupData.token.tokenName,
+      GroupData.token.tokenSymbol,
+      { gasLimit: 300000 }
     )
 
     // Wait for deployment to finish
-    const receipt = await contract.deployed()
+    console.log(contract)
 
-    console.log(receipt)
-
-    if (receipt !== null) {
+    if (contract !== null) {
       toast({
         title: 'Group Deployed!',
         description: 'Group Deployed! 🎉',
