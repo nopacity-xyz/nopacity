@@ -1,34 +1,22 @@
 import { ethers } from 'hardhat'
 
 async function main() {
-  const [owner] = await ethers.getSigners()
-  const daoName = 'ETHSD'
-  const votingDelay = 1
-  const votingPeriod = 50400 // 1 week
-  const tokenName = 'OurToken'
-  const tokenSymbol = 'OUT'
-  const timelockDelay = 300 // 1 hour
-  const qourumFraction = 1
-
-  // governor
+  // governor skeleton
   const OurGovernor = await ethers.getContractFactory('OurGovernor')
   const ourgovernor = await OurGovernor.deploy()
   await ourgovernor.deployed()
-
   console.log(`Governor deployed to ${ourgovernor.address}`)
 
-  // timelock
+  // timelock skeleton
   const OurTime = await ethers.getContractFactory('OurTimeLock')
   const ourtime = await OurTime.deploy()
   await ourtime.deployed()
-
   console.log(`Governor deployed to ${ourtime.address}`)
 
-  /// 721
+  /// 721 skeleton
   const Our721 = await ethers.getContractFactory('OurERC721')
   const our721 = await Our721.deploy()
   await our721.deployed()
-
   console.log(`Governor deployed to ${our721.address}`)
 
   const OurCloneFactory = await ethers.getContractFactory('OurCloneFactory')
@@ -41,36 +29,15 @@ async function main() {
 
   console.log(cloneFactory.address)
 
+  //Our Factory
   const factoryInstance = await OurCloneFactory.attach(cloneFactory.address)
 
-  const deployedGovernor = await factoryInstance.createNewGovernor(
-    daoName,
-    governor.address,
-    governor.address,
-    governor.address,
-    votingDelay,
-    votingPeriod,
-    qourumFraction
-  )
+  
 
-  // console.log(await factoryInstance.getCloneFromArray())
-
-  console.log(deployedGovernor)
-  console.log('HERE ')
-  console.log((await factoryInstance.getArrayLength()).toNumber())
-
-  // cloneFactory.createNewGovernor(
-  //   daoName,
-  //   governor.address,
-  //   governor.address,
-  //   governor.address,
-  //   votingDelay,
-  //   votingPeriod,
-  //   qourumFraction
-  // )
+  const getNextAddressFromFactory = async (number: any) => {
+    return ethers.utils.getContractAddress({
+      from: factoryInstance.address,
+      nonce: number + 1
+    })
+  }
 }
-
-main().catch(error => {
-  console.error(error)
-  process.exitCode = 1
-})
