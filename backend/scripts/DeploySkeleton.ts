@@ -1,13 +1,13 @@
 import { ethers } from 'hardhat'
 
 async function main() {
- // governor skeleton
+  // governor skeleton
   const OurGovernor = await ethers.getContractFactory('OurGovernor')
   const ourgovernor = await OurGovernor.deploy()
   await ourgovernor.deployed()
   console.log(`Governor deployed to ${ourgovernor.address}`)
 
-  //timelock skeleton
+  // timelock skeleton
   const OurTime = await ethers.getContractFactory('OurTimeLock')
   const ourtime = await OurTime.deploy()
   await ourtime.deployed()
@@ -28,10 +28,9 @@ async function main() {
   await cloneFactory.deployed()
 
   console.log(cloneFactory.address)
-
 }
 
 main().catch(error => {
-    console.error(error)
-    process.exitCode = 1
-  })
+  console.error(error)
+  process.exitCode = 1
+})

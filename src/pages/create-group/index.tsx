@@ -100,7 +100,7 @@ export default function CreateGroup() {
     const signer = provider.getSigner()
 
     const factoryInstance = new ethers.Contract(
-      '0xFE6bDAf1D3F0E10e2cDFD451156F6253368F23a8',
+      '0xf4F2d67CeCB7A8D43e5392c4FF78E98cFB83e7A0',
       OurCloneFactory.abi,
       signer
     )
@@ -113,14 +113,11 @@ export default function CreateGroup() {
       })
     }
 
-    // const amountDeploy = await factoryInstance.getArrayLength()
-    // const nonce = amountDeploy.toNumber()
-    // console.log('HERE')
-    // console.log(amountDeploy.toNumber())
+    const nonce = await provider.getTransactionCount(factoryInstance.address)
 
-    const determinedTimeLockAddress = await getNextAddressFromFactory(0)
-    const determinedGovernorAddress = await getNextAddressFromFactory(1)
-    const determinedTokenAddress = await getNextAddressFromFactory(2)
+    const determinedTimeLockAddress = await getNextAddressFromFactory(nonce - 1)
+    const determinedGovernorAddress = await getNextAddressFromFactory(nonce)
+    const determinedTokenAddress = await getNextAddressFromFactory(nonce + 1)
 
     const timeInSeconds = (quantity: number, period: string) => {
       let result
@@ -140,29 +137,53 @@ export default function CreateGroup() {
       return result
     }
 
-    // Deploy contract group!
-    const contract = await factoryInstance.createDAO(
+    // // Deploy contract group!
+    // const contract = await factoryInstance.createDAO(
+    //   determinedGovernorAddress,
+    //   GroupData.governor.groupName,
+    //   GroupData.governor.groupDescription,
+    //   determinedTokenAddress,
+    //   determinedTimeLockAddress,
+    //   '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
+    //   1,
+    //   timeInSeconds(
+    //     GroupData.governor.votingQuantity,
+    //     GroupData.governor.votingPeriod
+    //   ),
+    //   GroupData.governor.quorumFraction,
+    //   GroupData.token.tokenName,
+    //   GroupData.token.tokenSymbol,
+    //   { gasLimit: 300000 }
+    // )
+
+    const daoName = 'ETHSD'
+    const daoDescription = 'ETHSD'
+    const votingDelay = 1
+    const votingPeriod = 50400 // 1 sweek
+    // const tokenName = 'OurToken'
+    // const tokenSymbol = 'OUT'
+    // const timelockDelay = 300 // 1 hour
+    const quorumFraction = 1
+
+    const tx = await factoryInstance.createDAO(
       determinedGovernorAddress,
-      GroupData.governor.groupName,
-      GroupData.governor.groupDescription,
+      daoName,
+      daoDescription,
       determinedTokenAddress,
       determinedTimeLockAddress,
       '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
-      1,
-      timeInSeconds(
-        GroupData.governor.votingQuantity,
-        GroupData.governor.votingPeriod
-      ),
-      GroupData.governor.quorumFraction,
-      GroupData.token.tokenName,
-      GroupData.token.tokenSymbol,
-      { gasLimit: 300000 }
+      votingDelay,
+      votingPeriod,
+      quorumFraction,
+      'USDC',
+      'USDC',
+      { gasLimit: 3000000 }
     )
 
     // Wait for deployment to finish
-    console.log(contract)
+    console.log(tx)
 
-    if (contract !== null) {
+    if (tx !== null) {
       toast({
         title: 'Group Deployed!',
         description: 'Group Deployed! 🎉',
