@@ -6,7 +6,6 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/extensions/draft-ERC721
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/cryptography/draft-EIP712Upgradeable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
-import 'hardhat/console.sol';
 
 contract OurERC721 is
   ERC721Upgradeable,
@@ -26,18 +25,15 @@ contract OurERC721 is
   ) public virtual initializer {
     __ERC721_init(_tokenName, _tokenSymbol);
     __EIP712_init(_tokenName, '1');
+    __Ownable_init(_governor);
     governor = _governor;
   }
 
   function safeMint(address to) public onlyOwner {
-    console.log('HERE');
      uint256 tokenId = _tokenIdCounter.current();
     _tokenIdCounter.increment();
-    console.log('about to mint');
     _safeMint(to, tokenId);
-    console.log('minted');
     _delegate(to, to);
-    console.log('delegate');
 
   }
 

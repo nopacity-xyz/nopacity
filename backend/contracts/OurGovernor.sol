@@ -58,7 +58,7 @@ contract OurGovernor is
     // require(success, 'Failed to transfer');
     console.log('You got here');
     OurERC721(address(token)).safeMint(tx.origin);
-     console.log('and here');
+    console.log('and here');
   }
 
   function votingDelay() public view override returns (uint256) {

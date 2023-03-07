@@ -86,7 +86,7 @@ async function main() {
    const gov = await getGov(voter);
     //console.log(gov)
 
-  const tx = await gov.join({gasLimit: 30064})
+  const tx = await gov.connect(voter).join({gasLimit: 30000000})
   console.log('tran')
   console.log(tx)
 
