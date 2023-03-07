@@ -24,7 +24,7 @@ contract OurCloneFactory {
     address owner;
   }
 
-  daoInformation[] DAOS;
+  daoInformation[] public DAOS;
 
   constructor(
     address _governorImplementationContract,
@@ -39,6 +39,7 @@ contract OurCloneFactory {
   event NewGovernorClone(address _governor);
   event NewTimeLockClone(address _timeLock);
   event NewERC721Clone(address _erc721);
+  event NewDao(address dao);
 
   address[] proposers;
   address[] executors;
@@ -121,7 +122,7 @@ contract OurCloneFactory {
   }
 
   function getArrayLength() public view returns (uint) {
-    return allGovernors.length;
+    return DAOS.length;
   }
 
   function createDAO(
@@ -137,17 +138,20 @@ contract OurCloneFactory {
     string memory _tokenName,
     string memory _tokenSymbol
   ) public returns (address) {
+
     executors.push(address(0));
     proposers.push(determinedGovernorAddress);
-
+    
     address timeAddress = createNewTimeLock(300, tx.origin, 0);
+    console.log('acutal time Address from contract', timeAddress);
+    
     require(address(determinedTimeAddress) == timeAddress, 'time Failed');
 
     address govAddress = createNewGovernor(
       _name,
       _description,
       determinedTokenAddress,
-      determinedTimeAddress,
+      TimelockControllerUpgradeable(payable(determinedTimeAddress)),
       _paymentToken,
       __votingDelay,
       __votingPeriod,
@@ -157,6 +161,8 @@ contract OurCloneFactory {
       address(determinedGovernorAddress) == govAddress,
       'Governor Failed'
     );
+    console.log('acutal Gov Address from contract', govAddress);
+
 
     address tokenAddress = createNewERC721(
       determinedGovernorAddress,
@@ -164,9 +170,22 @@ contract OurCloneFactory {
       _tokenSymbol
     );
     require(address(determinedTokenAddress) == tokenAddress, 'token Failed');
+    console.log('acutal token Address from contract', tokenAddress);
+
 
     DAOS.push(daoInformation(govAddress, timeAddress, tokenAddress, tx.origin));
+    emit NewDao(govAddress);
 
     return govAddress;
   }
+
+  function getDaos() public view returns(daoInformation[] memory){
+    return DAOS;
+  }
+
+  function getSpecificDAO(uint _dao) public view returns(daoInformation memory){
+    return DAOS[_dao];
+  }
+
+
 }
