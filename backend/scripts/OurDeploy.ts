@@ -17,6 +17,8 @@ async function main() {
   const provider = ethers.getDefaultProvider('http://127.0.0.1:8545/')
   const owner = new ethers.Wallet('0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d',provider)
 
+  const voter = new ethers.Wallet('0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a',provider)
+
   const factoryInstance = new ethers.Contract('0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',OurCloneFactory.abi,owner);
 
   let nonce = await provider.getTransactionCount(factoryInstance.address)
@@ -48,37 +50,45 @@ async function main() {
   // const timelockDelay = 300 // 1 hour
   const quorumFraction = 1
 
-  // const DAOtx = await factoryInstance.createDAO(
-  //   determinedGovernorAddress,
-  //   daoName,
-  //   daoDescription,
-  //   determinedTokenAddress,
-  //   determinedTimeLockAddress,
-  //   '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
-  //   votingDelay,
-  //   votingPeriod,
-  //   quorumFraction,
-  //   'USDC',
-  //   'USDC',
-  //   {gasLimit: 30000000}
-  // )
+  async function launchDao(){
+    const DAOtx = await factoryInstance.createDAO(
+      determinedGovernorAddress,
+      daoName,
+      daoDescription,
+      determinedTokenAddress,
+      determinedTimeLockAddress,
+      '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
+      votingDelay,
+      votingPeriod,
+      quorumFraction,
+      'USDC',
+      'USDC',
+      {gasLimit: 30000000}
 
- // console.log(await DAOtx)
-  //console.log(await factoryInstance.getDaos())
+    )
 
-  const govStruct = await factoryInstance.getSpecificDAO(0)
+      return DAOtx
 
-
-  const voter = 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC
-  const voterP = 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
-
-  //const gov = govStruct.governor
-  const gov = new ethers.Contract(govStruct.governor,OurGovernor.abi,voter)
+  }
 
 
-  console.log(gov.connect(voter));
+  async function getGov(voter : any){
+    const govStruct = await factoryInstance.getSpecificDAO(0)  
+    const gov = new ethers.Contract(govStruct.governor,OurGovernor.abi,voter)
+    return gov
 
-  console.log(gov.join(),voterP);
+  }
+
+    await launchDao();
+    console.log(await factoryInstance.getDaos())
+
+
+   const gov = await getGov(voter);
+    //console.log(gov)
+
+  const tx = await gov.join({gasLimit: 30064})
+  console.log('tran')
+  console.log(tx)
 
 
   //console.log(await factoryInstance.getArrayLength())
@@ -92,3 +102,4 @@ main().catch(error => {
   process.exitCode = 1
 })
 
+0x6D544390Eb535d61e196c87d6B9c80dCD8628Acd

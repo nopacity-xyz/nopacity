@@ -7,8 +7,9 @@ import '@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesU
 import '@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesQuorumFractionUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/governance/extensions/GovernorTimelockControlUpgradeable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import 'hardhat/console.sol';
 
-import './TokenContract.sol';
+import './OurERC721.sol';
 
 contract OurGovernor is
   GovernorUpgradeable,
@@ -45,17 +46,19 @@ contract OurGovernor is
   }
 
   function join() external {
-    uint allowance = IERC20(paymentToken).allowance(tx.origin, address(this));
-    require(allowance >= minAmount, 'minimum');
+   
+    //uint allowance = IERC20(paymentToken).allowance(tx.origin, address(this));
+    //require(allowance >= minAmount, 'minimum');
 
-    bool success = IERC20(paymentToken).transferFrom(
-      tx.origin,
-      timelock(),
-      minAmount
-    );
-    require(success, 'Failed to transfer');
-
-    // TokenContract(address(token)).safeMint(tx.origin);
+    // bool success = IERC20(paymentToken).transferFrom(
+    //   tx.origin,
+    //   timelock(),
+    //   minAmount
+    // );
+    // require(success, 'Failed to transfer');
+    console.log('You got here');
+    OurERC721(address(token)).safeMint(tx.origin);
+     console.log('and here');
   }
 
   function votingDelay() public view override returns (uint256) {
