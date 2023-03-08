@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat'
 
-async function main() {
+export async function deployCloneFactory() {
   // governor skeleton
   const OurGovernor = await ethers.getContractFactory('OurGovernor')
   const ourgovernor = await OurGovernor.deploy()
@@ -27,10 +27,17 @@ async function main() {
   )
   await cloneFactory.deployed()
 
-  console.log(cloneFactory.address)
+  return cloneFactory.address
 }
 
-main().catch(error => {
-  console.error(error)
-  process.exitCode = 1
-})
+if (require.main?.filename === __filename) {
+  deployCloneFactory()
+    .then(address => {
+      console.log(address)
+    })
+
+    .catch(error => {
+      console.error(error)
+      process.exitCode = 1
+    })
+}

@@ -3,6 +3,7 @@ import { ethers } from 'hardhat'
 
 import OurCloneFactory from '../artifacts/contracts/OurCloneFactory.sol/OurCloneFactory.json'
 import OurGovernor from '../artifacts/contracts/OurGovernor.sol/OurGovernor.json'
+import { deployCloneFactory } from './DeploySkeleton'
 
 async function main() {
   const getNextAddressFromFactory = async (number: any) => {
@@ -24,8 +25,10 @@ async function main() {
     provider
   )
 
+  const factoryContractAddress = await deployCloneFactory()
+
   const factoryInstance = new ethers.Contract(
-    '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
+    factoryContractAddress,
     OurCloneFactory.abi,
     owner
   )
