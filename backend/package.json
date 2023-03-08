@@ -6,6 +6,7 @@
   "scripts": {
     "build": "hardhat compile",
     "clean": "rm -rf artifacts cache typechain-types",
+    "deploy.dao": "hardhat run scripts/OurDeploy.ts --network localhost",
     "deploy.factory": "hardhat run scripts/DeploySkeleton.ts --network localhost",
     "fix": "npm-run-all -p fix.es fix.other",
     "fix.es": "eslint . --fix",
