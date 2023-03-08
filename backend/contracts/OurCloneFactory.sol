@@ -126,11 +126,10 @@ contract OurCloneFactory {
   }
 
   function createDAO(
-    address determinedGovernorAddress,
     string memory _name,
     string memory _description,
+    address determinedGovernorAddress,
     IVotesUpgradeable determinedTokenAddress,
-    TimelockControllerUpgradeable determinedTimeAddress,
     IERC20 _paymentToken,
     uint256 __votingDelay,
     uint256 __votingPeriod,
@@ -144,13 +143,11 @@ contract OurCloneFactory {
     address timeAddress = createNewTimeLock(300, tx.origin, 0);
     console.log('acutal time Address from contract', timeAddress);
 
-    require(address(determinedTimeAddress) == timeAddress, 'time Failed');
-
     address govAddress = createNewGovernor(
       _name,
       _description,
       determinedTokenAddress,
-      TimelockControllerUpgradeable(payable(determinedTimeAddress)),
+      TimelockControllerUpgradeable(payable(timeAddress)),
       _paymentToken,
       __votingDelay,
       __votingPeriod,

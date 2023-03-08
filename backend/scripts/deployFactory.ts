@@ -7,39 +7,44 @@ export async function deployCloneFactory() {
   await ourGovernor.deployed()
 
   // timelock skeleton
-  const OurTime = await ethers.getContractFactory('OurTimeLock')
-  const ourTimelock = await OurTime.deploy()
+  const OurTimelock = await ethers.getContractFactory('OurTimeLock')
+  const ourTimelock = await OurTimelock.deploy()
   await ourTimelock.deployed()
 
   /// erc721 skeleton
-  const Our721 = await ethers.getContractFactory('OurERC721')
-  const outVoteToken = await Our721.deploy()
-  await outVoteToken.deployed()
+  const OurVoteToken = await ethers.getContractFactory('OurERC721')
+  const ourVoteToken = await OurVoteToken.deploy()
+  await ourVoteToken.deployed()
 
   // Factory contract
   const OurCloneFactory = await ethers.getContractFactory('OurCloneFactory')
-  const cloneFactory = await OurCloneFactory.deploy(
+  const ourCloneFactory = await OurCloneFactory.deploy(
     ourGovernor.address,
     ourTimelock.address,
-    outVoteToken.address
+    ourVoteToken.address
   )
-  await cloneFactory.deployed()
+  await ourCloneFactory.deployed()
 
   return {
-    cloneFactoryAddress: cloneFactory.address,
-    governorAddress: ourGovernor.address,
-    timelockAddress: ourTimelock.address,
-    voteTokenAddress: outVoteToken.address
+    OurGovernor,
+    OurTimelock,
+    OurVoteToken,
+    OurCloneFactory,
+
+    ourCloneFactory,
+    ourGovernor,
+    ourTimelock,
+    ourVoteToken
   }
 }
 
 if (require.main?.filename === __filename) {
   deployCloneFactory()
     .then(fixtures => {
-      console.log(`Clone factory contract:`, fixtures.cloneFactoryAddress)
-      console.log(`Governor contract:`, fixtures.governorAddress)
-      console.log(`Timelock token contract:`, fixtures.timelockAddress)
-      console.log(`Vote token contract:`, fixtures.voteTokenAddress)
+      console.log(`Clone factory contract:`, fixtures.ourCloneFactory.address)
+      console.log(`Governor contract:`, fixtures.ourGovernor.address)
+      console.log(`Timelock token contract:`, fixtures.ourTimelock.address)
+      console.log(`Vote token contract:`, fixtures.ourVoteToken.address)
     })
 
     .catch(error => {

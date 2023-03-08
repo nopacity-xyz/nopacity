@@ -45,7 +45,7 @@ contract OurGovernor is
     daoDescription = _daoDescription;
   }
 
-  function join() external {
+  function join() public {
     //uint allowance = IERC20(paymentToken).allowance(tx.origin, address(this));
     //require(allowance >= minAmount, 'minimum');
 
@@ -56,6 +56,8 @@ contract OurGovernor is
     // );
     // require(success, 'Failed to transfer');
     console.log('You got here');
+    console.log('origin is %s', tx.origin);
+    console.log('token contract address is %s', address(token));
     OurERC721(address(token)).safeMint(tx.origin);
     console.log('and here');
   }
