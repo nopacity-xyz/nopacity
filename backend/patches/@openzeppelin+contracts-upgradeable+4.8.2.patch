@@ -1,0 +1,20 @@
+diff --git a/node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol b/node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol
+index affb7cd..1af0c43 100644
+--- a/node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol
++++ b/node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol
+@@ -26,12 +26,13 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
+     /**
+      * @dev Initializes the contract setting the deployer as the initial owner.
+      */
+-    function __Ownable_init() internal onlyInitializing {
++    function __Ownable_init(address __owner) internal onlyInitializing {
++        _owner = __owner;
+         __Ownable_init_unchained();
+     }
+ 
+     function __Ownable_init_unchained() internal onlyInitializing {
+-        _transferOwnership(_msgSender());
++        _transferOwnership(_owner);
+     }
+ 
+     /**
