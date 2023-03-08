@@ -1,15 +1,24 @@
-// import { loadFixture, mine } from '@nomicfoundation/hardhat-network-helpers'
-// import { assert, expect } from 'chai'
+import { mine } from '@nomicfoundation/hardhat-network-helpers'
 import { expect } from 'chai'
+import { BigNumber } from 'ethers'
 import { ethers } from 'hardhat'
 
 import { deployCloneFactory } from '../scripts/deployFactory'
 import { deployTestPaymentToken } from '../scripts/deployTestPaymentToken'
 
+const daoName = 'ETHSD'
+const daoDescription = 'ETHSD'
+const votingDelay = 1
+const votingPeriod = 50400 // 1 sweek
+const tokenName = 'ETHSD Dao Token'
+const tokenSymbol = 'ETHSD'
+const timelockDelay = 300 // 1 hour
+const quorumFraction = 1
+
 async function deployFixtures() {
   const provider = ethers.provider
 
-  const [owner, voter] = await ethers.getSigners()
+  const [owner, voter, payee] = await ethers.getSigners()
 
   // console.log('THE OWNER!!!', owner.address)
   // const owner = new ethers.Wallet(
@@ -43,15 +52,6 @@ async function deployFixtures() {
   // console.log('predetermined gov', determinedGovernorAddress)
   // console.log('predetermined token', determinedTokenAddress)
 
-  const daoName = 'ETHSD'
-  const daoDescription = 'ETHSD'
-  const votingDelay = 1
-  const votingPeriod = 50400 // 1 sweek
-  // const tokenName = 'OurToken'
-  // const tokenSymbol = 'OUT'
-  // const timelockDelay = 300 // 1 hour
-  const quorumFraction = 1
-
   await ourCloneFactory.createDAO(
     daoName,
     daoDescription,
@@ -61,8 +61,8 @@ async function deployFixtures() {
     votingDelay,
     votingPeriod,
     quorumFraction,
-    'ETHSD Dao Token',
-    'ETHSD',
+    tokenName,
+    tokenSymbol,
     { gasLimit: 3000000 }
   )
 
@@ -90,13 +90,28 @@ async function deployFixtures() {
     voteToken,
 
     owner,
+    payee,
     voter
   }
 }
 
 describe('Newest DAO contract test', function () {
+  let fixtures: Awaited<ReturnType<typeof deployFixtures>>
+
+  const proposalAmount = ethers.utils.parseEther('10')
+
+  let target: string
+  let calldata: string
+  let description: string
+  let descriptionHash: string
+  let proposalId: BigNumber
+
+  this.beforeAll(async () => {
+    fixtures = await deployFixtures()
+  })
+
   it('should allow voter to join', async () => {
-    const { dao, paymentToken, voter, voteToken } = await deployFixtures()
+    const { dao, paymentToken, voter, voteToken } = fixtures
 
     // Allow the dao to take payment:
     await paymentToken
@@ -110,131 +125,56 @@ describe('Newest DAO contract test', function () {
     const votersTokenBalance = await voteToken.balanceOf(voter.address)
     expect(votersTokenBalance.toString()).equal('1')
   })
-  it.skip('should work for now...', async function () {
-    const { ourCloneFactory, OurGovernor, paymentToken } =
-      await deployFixtures()
+  it('should allow proposal', async function () {
+    const { dao, owner, payee, paymentToken } = fixtures
 
-    // const [owner, ...voters] = await ethers.getSigners()
+    const ABI = ['function transfer(address to, uint amount)']
+    const iface = new ethers.utils.Interface(ABI)
+    calldata = iface.encodeFunctionData('transfer', [
+      payee.address,
+      proposalAmount
+    ])
 
-    // Debug console logs:
-    // console.log(`Governor deployed to ${ourgovernor.address}`)
-    // console.log(`TimeLock deployed to ${ourtime.address}`)
-    // console.log(`ERC721 deployed to ${our721.address}`)
+    target = paymentToken.address
+    description = 'This is to pay one of the voters to fill a pothole'
+    descriptionHash = ethers.utils.id(description)
 
-    // await OurCloneFactory.deploy(
-    //   ourGovernor.address,
-    //   ourTimelock.address,
-    //   ourVoteToken.address
-    // )
-    // await cloneFactory.deployed()
+    // Owner can make proposal
+    await dao.connect(owner).propose([target], [0], [calldata], description)
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async function dummy() {
-      // const nonce = (await factoryInstance.getArrayLength()).toNumber()
-      const nonce = await ethers.provider.getTransactionCount(
-        ourCloneFactory.address
-      )
-      const getNextAddressFromFactory = async (number: any) => {
-        return ethers.utils.getContractAddress({
-          from: ourCloneFactory.address,
-          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-          nonce: number + 1
-        })
-      }
+    // Get the proposal ID
+    const eventFilter = dao.filters.ProposalCreated()
+    const eventDatas = await dao.queryFilter(eventFilter)
+    const [eventData] = eventDatas
+    proposalId = eventData.args.proposalId
+  })
+  it('should allow voting on proposal', async () => {
+    const { dao, owner, voter } = fixtures
 
-      // const getFirstAddressFromFactory = async () => {
-      //   return ethers.utils.getContractAddress({
-      //     from: factoryInstance.address,
-      //     // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      //     nonce: 0
-      //   })
-      // }
+    // mine a block for the proposal to pass the voting delay
+    await mine(votingDelay)
 
-      // GET IT WORKING FOR ONE!!
+    const voteTx = await dao.connect(voter).castVote(proposalId, 1)
+    const ownerVoteTx = await dao.connect(owner).castVote(proposalId, 1)
+    await voteTx.wait()
+    await ownerVoteTx.wait()
+  })
+  it('should execute a proposal', async () => {
+    const { dao, voter, paymentToken } = fixtures
 
-      // pre-determine governor
-      // pre-determine timelock
-      // pre-determine token
+    await mine(votingPeriod)
 
-      // console.log(
-      //   'HELLO,compare determined address from address within smartcontract?'
-      // )
+    const beforeBalance = await paymentToken.balanceOf(voter.address)
 
-      // console.log('First pre-determined address (timelock)')
-      // const determinedTimeLockAddress = await getNextAddressFromFactory(nonce)
-      // console.log('predetermined time ' + determinedTimeLockAddress)
+    await dao.connect(voter).queue([target], [0], [calldata], descriptionHash)
 
-      // console.log('Second pre-determined address (governor)')
-      const determinedGovernorAddress = await getNextAddressFromFactory(nonce)
-      console.log('predetermined gov ' + determinedGovernorAddress)
-      // actual
-      // console.log(await factoryInstance.getGovernorCloneFromArray(0))
+    // Wait until timelock delay has passed before executing
+    await mine(timelockDelay)
 
-      // console.log('Third pre-determined address (token)')
-      const determinedTokenAddress = await getNextAddressFromFactory(nonce + 1)
-      console.log('predetermined token ' + determinedTokenAddress)
-      // actual
+    await dao.connect(voter).execute([target], [0], [calldata], descriptionHash)
 
-      const daoName = 'ETHSD'
-      const daoDescription = 'ETHSD'
-      const votingDelay = 1
-      const votingPeriod = 50400 // 1 week
-      // const tokenName = 'OurToken'
-      // const tokenSymbol = 'OUT'
-      // const timelockDelay = 300 // 1 hour
-      const quorumFraction = 1
+    const afterBalance = await paymentToken.balanceOf(voter.address)
 
-      const DAOtx = await ourCloneFactory.createDAO(
-        daoName,
-        daoDescription,
-        determinedGovernorAddress,
-        determinedTokenAddress,
-        paymentToken.address,
-        votingDelay,
-        votingPeriod,
-        quorumFraction,
-        'USDC',
-        'USDC',
-        { gasLimit: 3000000 }
-      )
-
-      // console.log('time from DAO ' + (await factoryInstance.getTimeLockCloneFromArray(0)))
-
-      // console.log(
-      //   'governor from DAO' + (await factoryInstance.getGovernorCloneFromArray(0))
-      // )
-
-      // console.log('token from DAO ' + (await factoryInstance.getTokenCloneFromArray(0)))
-
-      const governorCloneAddress =
-        await ourCloneFactory.getGovernorCloneFromArray(0)
-
-      const governorCloneInstance = OurGovernor.attach(governorCloneAddress)
-
-      const ABI = ['function transfer(address to, uint amount)']
-      const iface = new ethers.utils.Interface(ABI)
-      const calldata = iface.encodeFunctionData('transfer', [
-        '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
-        ethers.utils.parseEther('1.0')
-      ])
-
-      await governorCloneInstance.join()
-      const target = '0x07865c6e87b9f70255377e024ace6630c1eaa37f'
-      const description = 'This is to pay one of the voters to fill a pothole'
-
-      console.log('Dao Created')
-      console.log(DAOtx)
-
-      const tx = await governorCloneInstance.propose(
-        [target],
-        [0],
-        [calldata],
-        description
-      )
-
-      const txReceipt = await tx.wait()
-      console.log('PROPOSAL')
-      console.log(txReceipt)
-    }
+    expect(afterBalance.eq(beforeBalance.add(proposalAmount)))
   })
 })
