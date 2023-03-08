@@ -46,7 +46,6 @@ contract OurGovernor is
   }
 
   function join() external {
-   
     //uint allowance = IERC20(paymentToken).allowance(tx.origin, address(this));
     //require(allowance >= minAmount, 'minimum');
 

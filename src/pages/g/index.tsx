@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react'
 import { ethers } from 'ethers'
 import { Magic } from 'magic-sdk'
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import React from 'react'
 
 import OurCloneFactory from '../../contracts/OurCloneFactory.json'
 import Layout from '../layout'

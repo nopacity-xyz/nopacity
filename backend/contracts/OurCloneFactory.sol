@@ -138,13 +138,12 @@ contract OurCloneFactory {
     string memory _tokenName,
     string memory _tokenSymbol
   ) public returns (address) {
-
     executors.push(address(0));
     proposers.push(determinedGovernorAddress);
-    
+
     address timeAddress = createNewTimeLock(300, tx.origin, 0);
     console.log('acutal time Address from contract', timeAddress);
-    
+
     require(address(determinedTimeAddress) == timeAddress, 'time Failed');
 
     address govAddress = createNewGovernor(
@@ -163,7 +162,6 @@ contract OurCloneFactory {
     );
     console.log('acutal Gov Address from contract', govAddress);
 
-
     address tokenAddress = createNewERC721(
       determinedGovernorAddress,
       _tokenName,
@@ -172,20 +170,19 @@ contract OurCloneFactory {
     require(address(determinedTokenAddress) == tokenAddress, 'token Failed');
     console.log('acutal token Address from contract', tokenAddress);
 
-
     DAOS.push(daoInformation(govAddress, timeAddress, tokenAddress, tx.origin));
     emit NewDao(govAddress);
 
     return govAddress;
   }
 
-  function getDaos() public view returns(daoInformation[] memory){
+  function getDaos() public view returns (daoInformation[] memory) {
     return DAOS;
   }
 
-  function getSpecificDAO(uint _dao) public view returns(daoInformation memory){
+  function getSpecificDAO(
+    uint _dao
+  ) public view returns (daoInformation memory) {
     return DAOS[_dao];
   }
-
-
 }

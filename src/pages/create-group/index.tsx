@@ -119,23 +119,23 @@ export default function CreateGroup() {
     const determinedGovernorAddress = await getNextAddressFromFactory(nonce)
     const determinedTokenAddress = await getNextAddressFromFactory(nonce + 1)
 
-    const timeInSeconds = (quantity: number, period: string) => {
-      let result
+    // const timeInSeconds = (quantity: number, period: string) => {
+    //   let result
 
-      if (period === 'weeks') {
-        result = quantity * 7 * 24 * 60 * 60
-      }
-      if (period === 'days') {
-        result = quantity * 24 * 60 * 60
-      }
-      if (period === 'hours') {
-        result = quantity * 60 * 60
-      }
-      if (period === 'minutes') {
-        result = quantity * 60
-      }
-      return result
-    }
+    //   if (period === 'weeks') {
+    //     result = quantity * 7 * 24 * 60 * 60
+    //   }
+    //   if (period === 'days') {
+    //     result = quantity * 24 * 60 * 60
+    //   }
+    //   if (period === 'hours') {
+    //     result = quantity * 60 * 60
+    //   }
+    //   if (period === 'minutes') {
+    //     result = quantity * 60
+    //   }
+    //   return result
+    // }
 
     // // Deploy contract group!
     // const contract = await factoryInstance.createDAO(

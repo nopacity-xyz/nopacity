@@ -57,23 +57,24 @@ describe('Newest DAO contract test', function () {
     // pre-determine timelock
     // pre-determine token
 
-    console.log('HELLO,compare determined address from address within smartcontract?')
+    console.log(
+      'HELLO,compare determined address from address within smartcontract?'
+    )
 
     const nonce = (await factoryInstance.getArrayLength()).toNumber()
-    
 
     console.log('First pre-determined address (timelock)')
     const determinedTimeLockAddress = await getNextAddressFromFactory(nonce)
     console.log('predetermined time ' + determinedTimeLockAddress)
 
     // console.log('Second pre-determined address (governor)')
-    const determinedGovernorAddress = await getNextAddressFromFactory(nonce+1)
+    const determinedGovernorAddress = await getNextAddressFromFactory(nonce + 1)
     console.log('predetermined gov ' + determinedGovernorAddress)
     // actual
     // console.log(await factoryInstance.getGovernorCloneFromArray(0))
 
-    //console.log('Third pre-determined address (token)')
-    const determinedTokenAddress = await getNextAddressFromFactory(nonce+2)
+    // console.log('Third pre-determined address (token)')
+    const determinedTokenAddress = await getNextAddressFromFactory(nonce + 2)
     console.log('predetermined token ' + determinedTokenAddress)
     // actual
 
@@ -98,7 +99,7 @@ describe('Newest DAO contract test', function () {
       quorumFraction,
       'USDC',
       'USDC',
-      {gasLimit: 300000},
+      { gasLimit: 300000 }
     )
 
     // console.log('time from DAO ' + (await factoryInstance.getTimeLockCloneFromArray(0)))
@@ -121,13 +122,12 @@ describe('Newest DAO contract test', function () {
       ethers.utils.parseEther('1.0')
     ])
 
-    governorCloneInstance.join()
+    await governorCloneInstance.join()
     const target = '0x07865c6e87b9f70255377e024ace6630c1eaa37f'
     const description = 'This is to pay one of the voters to fill a pothole'
 
     console.log('Dao Created')
     console.log(DAOtx)
-
 
     const tx = await governorCloneInstance.propose(
       [target],

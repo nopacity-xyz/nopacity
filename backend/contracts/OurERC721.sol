@@ -30,11 +30,10 @@ contract OurERC721 is
   }
 
   function safeMint(address to) public onlyOwner {
-     uint256 tokenId = _tokenIdCounter.current();
+    uint256 tokenId = _tokenIdCounter.current();
     _tokenIdCounter.increment();
     _safeMint(to, tokenId);
     _delegate(to, to);
-
   }
 
   // The following functions are overrides required by Solidity.
