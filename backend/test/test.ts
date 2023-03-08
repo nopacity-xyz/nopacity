@@ -99,7 +99,7 @@ describe('Newest DAO contract test', function () {
       quorumFraction,
       'USDC',
       'USDC',
-      { gasLimit: 300000 }
+      { gasLimit: 3000000 }
     )
 
     // console.log('time from DAO ' + (await factoryInstance.getTimeLockCloneFromArray(0)))
