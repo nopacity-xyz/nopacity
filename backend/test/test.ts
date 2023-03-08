@@ -61,8 +61,8 @@ async function deployFixtures() {
     votingDelay,
     votingPeriod,
     quorumFraction,
-    'Dao Token',
-    'DAOT',
+    'ETHSD Dao Token',
+    'ETHSD',
     { gasLimit: 3000000 }
   )
 
