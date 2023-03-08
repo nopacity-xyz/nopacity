@@ -5,11 +5,11 @@
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
-		"start": "next start",
 		"fix": "next lint -- --fix && cd backend && npm run fix",
 		"lint": "next lint && cd backend && npm run lint",
 		"prepare": "husky install && cd backend && npm i && cd ..",
-		"precommit": "npm-run-all build lint"
+		"precommit": "npm-run-all build lint",
+		"start": "next start"
 	},
 	"dependencies": {
 		"@chakra-ui/icons": "^2.0.17",
