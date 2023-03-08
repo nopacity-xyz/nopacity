@@ -20,37 +20,21 @@ async function deployFixtures() {
 
   const [owner, voter, payee] = await ethers.getSigners()
 
-  // console.log('THE OWNER!!!', owner.address)
-  // const owner = new ethers.Wallet(
-  //   '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
-  //   provider
-  // )
-
-  // const voter = new ethers.Wallet(
-  //   '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d',
-  //   provider
-  // )
-
   const paymentFixtures = await deployTestPaymentToken()
   const cloneFactoryFixtures = await deployCloneFactory()
 
   const ourCloneFactory = cloneFactoryFixtures.ourCloneFactory
 
   const nonce = await provider.getTransactionCount(ourCloneFactory.address)
-  // console.log(nonce)
-  const getNextAddressFromFactory = async (number: any) => {
+  const getNextAddressFromFactory = async (offset: number) => {
     return ethers.utils.getContractAddress({
       from: ourCloneFactory.address,
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      nonce: number + 1
+      nonce: offset + 1
     })
   }
 
   const determinedGovernorAddress = await getNextAddressFromFactory(nonce)
   const determinedTokenAddress = await getNextAddressFromFactory(nonce + 1)
-
-  // console.log('predetermined gov', determinedGovernorAddress)
-  // console.log('predetermined token', determinedTokenAddress)
 
   await ourCloneFactory.createDAO(
     daoName,
@@ -71,16 +55,6 @@ async function deployFixtures() {
   const voteToken = cloneFactoryFixtures.OurVoteToken.attach(govStruct.erc721)
   const timelock = cloneFactoryFixtures.OurTimelock.attach(govStruct.timelock)
 
-  // console.log('governor struct', govStruct)
-
-  // const gov = new ethers.Contract(
-  //   govStruct.governor,
-  //   cloneFactoryFixtures.OurGovernor.interface,
-  //   voter
-  // )
-  // console.log(gov)
-
-  // console.log(await factoryInstance.getArrayLength())
   return {
     ...cloneFactoryFixtures,
     ...paymentFixtures,
