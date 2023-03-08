@@ -5,7 +5,7 @@ import '@openzeppelin/contracts/proxy/Clones.sol';
 import './OurGovernor.sol';
 import 'hardhat/console.sol';
 import './OurTimeLock.sol';
-import './OurERC721.sol';
+import './OurVoteToken.sol';
 import 'hardhat/console.sol';
 
 contract OurCloneFactory {
@@ -99,7 +99,7 @@ contract OurCloneFactory {
     string memory _tokenSymbol
   ) public returns (address) {
     address instance = Clones.clone(erc721ImplementationContract);
-    OurERC721(instance).initialize(governor, _tokenName, _tokenSymbol);
+    OurVoteToken(instance).initialize(governor, _tokenName, _tokenSymbol);
     emit NewERC721Clone(instance);
     allERC721.push(instance);
     return instance;

@@ -12,7 +12,7 @@ export async function deployCloneFactory() {
   await ourTimelock.deployed()
 
   /// erc721 skeleton
-  const OurVoteToken = await ethers.getContractFactory('OurERC721')
+  const OurVoteToken = await ethers.getContractFactory('OurVoteToken')
   const ourVoteToken = await OurVoteToken.deploy()
   await ourVoteToken.deployed()
 

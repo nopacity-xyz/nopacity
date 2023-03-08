@@ -26,7 +26,7 @@ async function main() {
   console.log(`Governor deployed to ${ourtime.address}`)
 
   /// 721
-  const Our721 = await ethers.getContractFactory('OurERC721')
+  const Our721 = await ethers.getContractFactory('OurVoteToken')
   const our721 = await Our721.deploy()
   await our721.deployed()
 

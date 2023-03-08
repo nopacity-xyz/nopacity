@@ -9,7 +9,7 @@ import '@openzeppelin/contracts/utils/Counters.sol';
 
 import 'hardhat/console.sol';
 
-contract OurERC721 is
+contract OurVoteToken is
   ERC721Upgradeable,
   OwnableUpgradeable,
   EIP712Upgradeable,

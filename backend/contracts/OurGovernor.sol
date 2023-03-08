@@ -9,7 +9,7 @@ import '@openzeppelin/contracts-upgradeable/governance/extensions/GovernorTimelo
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import 'hardhat/console.sol';
 
-import './OurERC721.sol';
+import './OurVoteToken.sol';
 
 contract OurGovernor is
   GovernorUpgradeable,
@@ -58,7 +58,7 @@ contract OurGovernor is
     console.log('You got here');
     console.log('origin is %s', tx.origin);
     console.log('token contract address is %s', address(token));
-    OurERC721(address(token)).safeMint(tx.origin);
+    OurVoteToken(address(token)).safeMint(tx.origin);
     console.log('and here');
   }
 
