@@ -3,10 +3,8 @@ pragma solidity ^0.8.9;
 
 import '@openzeppelin/contracts/proxy/Clones.sol';
 import './OurGovernor.sol';
-import 'hardhat/console.sol';
 import './OurTimeLock.sol';
 import './OurVoteToken.sol';
-import 'hardhat/console.sol';
 
 contract OurCloneFactory {
   address public governorImplementationContract;
@@ -141,7 +139,6 @@ contract OurCloneFactory {
     proposers.push(determinedGovernorAddress);
 
     address timeAddress = createNewTimeLock(300, tx.origin, 0);
-    console.log('acutal time Address from contract', timeAddress);
 
     address govAddress = createNewGovernor(
       _name,
@@ -157,7 +154,6 @@ contract OurCloneFactory {
       address(determinedGovernorAddress) == govAddress,
       'Governor Failed'
     );
-    console.log('acutal Gov Address from contract', govAddress);
 
     address tokenAddress = createNewERC721(
       determinedGovernorAddress,
@@ -165,7 +161,6 @@ contract OurCloneFactory {
       _tokenSymbol
     );
     require(address(determinedTokenAddress) == tokenAddress, 'token Failed');
-    console.log('acutal token Address from contract', tokenAddress);
 
     DAOS.push(daoInformation(govAddress, timeAddress, tokenAddress, tx.origin));
     emit NewDao(govAddress);

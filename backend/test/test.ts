@@ -96,12 +96,18 @@ async function deployFixtures() {
 
 describe('Newest DAO contract test', function () {
   it('should allow voter to join', async () => {
-    const { dao, voter, voteToken } = await deployFixtures()
+    const { dao, paymentToken, voter, voteToken } = await deployFixtures()
 
+    // Allow the dao to take payment:
+    await paymentToken
+      .connect(voter)
+      .approve(dao.address, ethers.utils.parseEther('100'))
+
+    // Join the dao:
     await dao.connect(voter).join({ gasLimit: 30000000 })
 
+    // Assertions:
     const votersTokenBalance = await voteToken.balanceOf(voter.address)
-
     expect(votersTokenBalance.toString()).equal('1')
   })
   it.skip('should work for now...', async function () {

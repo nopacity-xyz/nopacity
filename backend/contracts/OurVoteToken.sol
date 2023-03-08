@@ -7,8 +7,6 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/cryptography/draft-EIP712Upgradeable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
-import 'hardhat/console.sol';
-
 contract OurVoteToken is
   ERC721Upgradeable,
   OwnableUpgradeable,
@@ -32,7 +30,6 @@ contract OurVoteToken is
   }
 
   function safeMint(address to) public onlyOwner {
-    console.log('minting to %s', to);
     uint256 tokenId = _tokenIdCounter.current();
     _tokenIdCounter.increment();
     _safeMint(to, tokenId);
