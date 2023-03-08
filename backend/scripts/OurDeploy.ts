@@ -3,7 +3,7 @@ import { ethers } from 'hardhat'
 
 import OurCloneFactory from '../artifacts/contracts/OurCloneFactory.sol/OurCloneFactory.json'
 import OurGovernor from '../artifacts/contracts/OurGovernor.sol/OurGovernor.json'
-import { deployCloneFactory } from './DeploySkeleton'
+import { deployCloneFactory } from './deployFactory'
 
 async function main() {
   const getNextAddressFromFactory = async (number: any) => {
