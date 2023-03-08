@@ -12,8 +12,11 @@ import {
   Stack,
   Text
 } from '@chakra-ui/react'
-import React from 'react'
+import { ethers } from 'ethers'
+import { Magic } from 'magic-sdk'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 
+import OurCloneFactory from '../../contracts/OurCloneFactory.json'
 import Layout from '../layout'
 
 interface SingleGroupProps {
@@ -22,6 +25,10 @@ interface SingleGroupProps {
   groupDescription: string
   numMembers: number
 }
+
+// for (let i = 0; i < daos.length; i++) {
+//   console.log(i)
+// }
 
 const SingleGroupItem = ({
   groupAddress,
@@ -78,7 +85,27 @@ const SingleGroupItem = ({
   )
 }
 
+async function GetGroups() {
+  const magic = new Magic('pk_live_1E208ADDCC61B99E', {
+    network: 'goerli'
+  })
+
+  const provider = new ethers.providers.Web3Provider(magic.rpcProvider as any)
+  const signer = provider.getSigner()
+
+  const factoryInstance = new ethers.Contract(
+    '0xf4F2d67CeCB7A8D43e5392c4FF78E98cFB83e7A0',
+    OurCloneFactory.abi,
+    signer
+  )
+  const daos = await factoryInstance.getDaos()
+  console.log(daos)
+}
+
 export default function Groups() {
+  // eslint-disable-next-line no-void
+  void GetGroups()
+
   return (
     <>
       <Layout>
