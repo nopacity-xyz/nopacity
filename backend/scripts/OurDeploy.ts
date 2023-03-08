@@ -25,10 +25,10 @@ async function main() {
     provider
   )
 
-  const factoryContractAddress = await deployCloneFactory()
+  const { cloneFactoryAddress } = await deployCloneFactory()
 
   const factoryInstance = new ethers.Contract(
-    factoryContractAddress,
+    cloneFactoryAddress,
     OurCloneFactory.abi,
     owner
   )

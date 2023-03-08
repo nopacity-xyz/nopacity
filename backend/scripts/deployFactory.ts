@@ -3,37 +3,43 @@ import { ethers } from 'hardhat'
 export async function deployCloneFactory() {
   // governor skeleton
   const OurGovernor = await ethers.getContractFactory('OurGovernor')
-  const ourgovernor = await OurGovernor.deploy()
-  await ourgovernor.deployed()
-  console.log(`Governor deployed to ${ourgovernor.address}`)
+  const ourGovernor = await OurGovernor.deploy()
+  await ourGovernor.deployed()
 
   // timelock skeleton
   const OurTime = await ethers.getContractFactory('OurTimeLock')
-  const ourtime = await OurTime.deploy()
-  await ourtime.deployed()
-  console.log(`Time deployed to ${ourtime.address}`)
+  const ourTimelock = await OurTime.deploy()
+  await ourTimelock.deployed()
 
-  /// 721 skeleton
+  /// erc721 skeleton
   const Our721 = await ethers.getContractFactory('OurERC721')
-  const our721 = await Our721.deploy()
-  await our721.deployed()
-  console.log(`721 deployed to ${our721.address}`)
+  const outVoteToken = await Our721.deploy()
+  await outVoteToken.deployed()
 
+  // Factory contract
   const OurCloneFactory = await ethers.getContractFactory('OurCloneFactory')
   const cloneFactory = await OurCloneFactory.deploy(
-    ourgovernor.address, // ourgovernor.address
-    ourtime.address, // ourtime.address
-    our721.address // our721.address
+    ourGovernor.address,
+    ourTimelock.address,
+    outVoteToken.address
   )
   await cloneFactory.deployed()
 
-  return cloneFactory.address
+  return {
+    cloneFactoryAddress: cloneFactory.address,
+    governorAddress: ourGovernor.address,
+    timelockAddress: ourTimelock.address,
+    voteTokenAddress: outVoteToken.address
+  }
 }
 
 if (require.main?.filename === __filename) {
   deployCloneFactory()
-    .then(address => {
-      console.log(address)
+    .then(fixtures => {
+      console.log(`Clone factory contract:`, fixtures.cloneFactoryAddress)
+      console.log(`Governor contract:`, fixtures.governorAddress)
+      console.log(`Timelock token contract:`, fixtures.timelockAddress)
+      console.log(`Vote token contract:`, fixtures.voteTokenAddress)
     })
 
     .catch(error => {
