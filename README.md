@@ -11,11 +11,8 @@
 First, run the development server:
 
 ```bash
-npm i
-npm run dev
-
-cd backend
-npx hardhat node
+cd into nopacity
+npm run dev.hardhat
 ```
 
 
