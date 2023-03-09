@@ -12,6 +12,7 @@ First, run the development server:
 
 ```bash
 cd into nopacity
+npm run dev
 npm run dev.hardhat
 ```
 
