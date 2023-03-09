@@ -17,3 +17,14 @@ export async function deployTestPaymentToken() {
     paymentToken
   }
 }
+
+if (require.main?.filename === __filename) {
+  deployTestPaymentToken()
+    .then(fixtures => {
+      console.log(`Payment token contract:`, fixtures.paymentToken.address)
+    })
+    .catch(error => {
+      console.error(error)
+      process.exitCode = 1
+    })
+}
