@@ -17,7 +17,7 @@
     <br />
     <a href="https://presolve.xyz">View Live Site</a>
     ·
-        <a href="https://github.com/presolve-xyz/presolve/blob/main/Presolve.xyz%20Overview.pdf">View Overview</a>
+        <a href="https://github.com/presolve-xyz/presolve/blob/main/Presolve.xyz_Overview.pdf">View Overview</a>
     ·
     <a href="https://github.com/presolve-xyz/presolve/issues">Report Bug</a>
     ·
@@ -73,24 +73,12 @@ This is an example of how to list things you need to use the software and how to
 
 _Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
 
-1. Clone the repo
-   ```sh
-   git clone https://github.com/presolve-xyz/presolve.git
-   ```
-2. Install NPM packages
-   ```sh
-   npm install
-   ```
-3. Enter your API Key & Private Key in `.env`
-   ```js
-   RPC_URL=
-   PRIVATE_KEY=
-   ```
-4. Run
-   ```sh
-   npm run dev
-   npm run dev.hardhat
-   ```
+```bash
+cd into nopacity
+npm i
+npm run dev
+npm run dev.hardhat
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
