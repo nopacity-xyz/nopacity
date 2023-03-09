@@ -34,10 +34,12 @@ import {
   useToast
 } from '@chakra-ui/react'
 import { ethers } from 'ethers'
-import { Magic } from 'magic-sdk'
 import React, { ChangeEvent, useState } from 'react'
 
-import OurCloneFactory from '../../contracts/OurCloneFactory.json'
+import { asConfig, Config } from '@/config'
+import { getContracts } from '@/contracts'
+import { getMagic } from '@/utils/getMagic'
+
 import Layout from '../layout'
 
 // interface GroupConfigData {
@@ -54,7 +56,12 @@ import Layout from '../layout'
 //   }
 // }
 
-export default function CreateGroup() {
+interface Props {
+  config: Config
+}
+
+export default function CreateGroup(props: Props) {
+  const { config } = props
   const toast = useToast()
   const [step, setStep] = useState(1)
   const [progress, setProgress] = useState(33.33)
@@ -80,10 +87,9 @@ export default function CreateGroup() {
   const handleSubmit = async () => {
     // e.preventDefault()
     // Authenticate User
-    const magic = new Magic('pk_live_1E208ADDCC61B99E', {
-      network: 'goerli'
-    })
+    const magic = getMagic(config)
     const provider = new ethers.providers.Web3Provider(magic.rpcProvider as any)
+
     const feeData = await provider.getFeeData()
     // const gasData = await provider.getGasPrice()
     // const gasEstimateData = await provider.estimateGas()
@@ -99,23 +105,18 @@ export default function CreateGroup() {
     // ⭐️ After user is successfully authenticated
     const signer = provider.getSigner()
 
-    const factoryInstance = new ethers.Contract(
-      '0xf4F2d67CeCB7A8D43e5392c4FF78E98cFB83e7A0',
-      OurCloneFactory.abi,
-      signer
-    )
+    const { ourCloneFactory } = getContracts(config, signer)
 
     const getNextAddressFromFactory = async (number: any) => {
       return ethers.utils.getContractAddress({
-        from: factoryInstance.address,
+        from: ourCloneFactory.address,
         // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         nonce: number + 1
       })
     }
 
-    const nonce = await provider.getTransactionCount(factoryInstance.address)
+    const nonce = await provider.getTransactionCount(ourCloneFactory.address)
 
-    const determinedTimeLockAddress = await getNextAddressFromFactory(nonce - 1)
     const determinedGovernorAddress = await getNextAddressFromFactory(nonce)
     const determinedTokenAddress = await getNextAddressFromFactory(nonce + 1)
 
@@ -165,13 +166,12 @@ export default function CreateGroup() {
     // const timelockDelay = 300 // 1 hour
     const quorumFraction = 1
 
-    const tx = await factoryInstance.createDAO(
-      determinedGovernorAddress,
+    const tx = await ourCloneFactory.createDAO(
       daoName,
       daoDescription,
+      determinedGovernorAddress,
       determinedTokenAddress,
-      determinedTimeLockAddress,
-      '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
+      config.paymentTokenAddress,
       votingDelay,
       votingPeriod,
       quorumFraction,
@@ -216,7 +216,7 @@ export default function CreateGroup() {
   }
 
   return (
-    <Layout>
+    <Layout config={config}>
       <Box
         borderWidth="1px"
         rounded="lg"
@@ -624,4 +624,9 @@ export default function CreateGroup() {
       </Box>
     </Layout>
   )
+}
+
+export function getStaticProps() {
+  const config = asConfig(process.env)
+  return { props: { config } }
 }

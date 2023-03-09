@@ -19,8 +19,10 @@ import {
 import { Magic } from 'magic-sdk'
 import { useEffect, useState } from 'react'
 
+import { Config } from '@/config'
 import { useDispatch } from '@/hooks/useDispatch'
 import { useSelector } from '@/hooks/useSelector'
+import { getMagic } from '@/utils/getMagic'
 
 import Blockie from './Blockie'
 
@@ -50,8 +52,12 @@ const NavLink = ({ name, link }: NavLinkProps): JSX.Element => (
     {name}
   </Link>
 )
+interface Props {
+  config: Config
+}
 
-export default function NavBar() {
+export default function NavBar(props: Props) {
+  const { config } = props
   const { isOpen, onOpen, onClose } = useDisclosure()
   const isAuth = useSelector(state => state.isAuth)
   const user = useSelector(state => state.user)
@@ -59,9 +65,7 @@ export default function NavBar() {
   const [magic, setMagic] = useState<Magic>()
 
   useEffect(() => {
-    const magic = new Magic('pk_live_1E208ADDCC61B99E', {
-      network: 'goerli'
-    })
+    const magic = getMagic(config)
     setMagic(magic)
 
     if (user != null) {

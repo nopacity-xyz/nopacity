@@ -4,15 +4,21 @@ import { Plus_Jakarta_Sans } from 'next/font/google'
 import Head from 'next/head'
 import Link from 'next/link'
 
+import { asConfig, Config } from '@/config'
 import styles from '@/styles/Home.module.css'
 
 import Layout from './layout'
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'] })
 
-export default function Home() {
+interface Props {
+  config: Config
+}
+
+export default function Home(props: Props) {
+  const { config } = props
   return (
-    <Layout>
+    <Layout config={config}>
       <Head>
         <title>Nopacity</title>
         <meta name="description" content="Create a Group in 2 clicks. " />
@@ -83,4 +89,9 @@ export default function Home() {
       </Box>
     </Layout>
   )
+}
+
+export function getStaticProps() {
+  const config = asConfig(process.env)
+  return { props: { config } }
 }

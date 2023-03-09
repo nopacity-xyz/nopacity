@@ -1,15 +1,20 @@
 import { Box, Center, Heading, Stack, Text } from '@chakra-ui/react'
 
+import { asConfig, Config } from '@/config'
 import Proposals from '@/pages/g/[groupAddress]/Proposals'
 import Layout from '@/pages/layout'
-export default function Group({
-  params
-}: {
-  params: { groupAddress: string }
-}) {
+
+interface Props {
+  config: Config
+  // params: { groupAddress: string }
+}
+
+export default function Group(props: Props) {
+  const { config } = props
+
   return (
     <>
-      <Layout>
+      <Layout config={config}>
         <Box
           mt="5%"
           p="5%"
@@ -50,4 +55,16 @@ export default function Group({
       </Layout>
     </>
   )
+}
+
+export function getStaticProps() {
+  const config = asConfig(process.env)
+  return { props: { config } }
+}
+
+export function getStaticPaths() {
+  return {
+    paths: [],
+    fallback: 'blocking'
+  }
 }

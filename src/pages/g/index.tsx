@@ -7,29 +7,147 @@ import {
   Center,
   Flex,
   Heading,
-  Image,
+  // Image,
   Link,
   Stack,
   Text
 } from '@chakra-ui/react'
 import { ethers } from 'ethers'
-import { Magic } from 'magic-sdk'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
-import OurCloneFactory from '../../contracts/OurCloneFactory.json'
+import { asConfig, Config } from '@/config'
+import { getContracts } from '@/contracts'
+import { getMagic } from '@/utils/getMagic'
+
 import Layout from '../layout'
+
+interface GetGroupProps {
+  config: Config
+}
+
+interface DaoData {
+  address: string
+  name: string
+  description: string
+}
+
+export default function Groups(props: GetGroupProps) {
+  const { config } = props
+  const [loading, setLoading] = useState(true)
+  const [daoData, setDaoData] = useState<DaoData[]>([])
+
+  useEffect(() => {
+    const magic = getMagic(config)
+    const provider = new ethers.providers.Web3Provider(magic.rpcProvider as any)
+    const signer = provider.getSigner()
+    const { ourCloneFactory, ourGovernor } = getContracts(config, signer)
+
+    const handler = async (): Promise<void> => {
+      const daos = await ourCloneFactory.getDaos()
+      const daoData = await Promise.all(
+        daos.map(async dao => {
+          const governor = ourGovernor.attach(dao.governor)
+          const name = await governor.name()
+          const description = await governor.daoDescription()
+          const data: DaoData = {
+            address: dao.governor,
+            name,
+            description
+          }
+          return data
+        })
+      )
+      setDaoData(daoData)
+      setLoading(false)
+    }
+
+    setLoading(true)
+    handler().catch(error => {
+      console.error(error)
+    })
+  }, [config])
+
+  return (
+    <>
+      <Layout config={config}>
+        <Box
+          mt="5%"
+          p="5%"
+          backdropFilter="auto"
+          backdropBlur="8px"
+          border="1px solid rgba(255, 255, 255, 0.4)"
+          backgroundColor="rgba(255, 255, 255, 0.2)"
+          borderRadius="20px"
+          shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
+        >
+          <Center>
+            <Box>
+              <Flex>
+                <Heading
+                  w="100%"
+                  textAlign="left"
+                  fontWeight="bold"
+                  mb="2%"
+                  color="white"
+                  // color="white"
+                >
+                  Groups
+                </Heading>
+              </Flex>
+              <Flex flexDirection="column">
+                {loading ? 'Loading...' : null}
+                {daoData.map(data => {
+                  return (
+                    <SingleGroupItem
+                      key={data.address}
+                      groupAddress={data.address}
+                      groupName={data.name}
+                      groupDescription={data.description}
+                      // numMembers={40}
+                    />
+                  )
+                })}
+                {/* <SingleGroupItem
+                      groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
+                      groupName="Test Group Name"
+                      groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
+                      numMembers={40}
+                    />
+                  </Flex>
+                  <Flex>
+                    <SingleGroupItem
+                      groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
+                      groupName="Test Group Name"
+                      groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
+                      numMembers={40}
+                    />
+                    <SingleGroupItem
+                      groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
+                      groupName="Test Group Name"
+                      groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
+                      numMembers={40}
+                    />
+                  */}
+              </Flex>
+            </Box>
+          </Center>
+        </Box>
+      </Layout>
+    </>
+  )
+}
+
+export function getStaticProps() {
+  const config = asConfig(process.env)
+  return { props: { config } }
+}
 
 interface SingleGroupProps {
   groupAddress: string
   groupName: string
   groupDescription: string
-  numMembers: number
+  numMembers?: number
 }
-
-// for (let i = 0; i < daos.length; i++) {
-//   console.log(i)
-// }
-
 const SingleGroupItem = ({
   groupAddress,
   groupName,
@@ -56,12 +174,12 @@ const SingleGroupItem = ({
       overflow="hidden"
       variant="outline"
     >
-      <Image
+      {/* <Image
         objectFit="cover"
         maxW={{ base: '100%', sm: '200px' }}
         src="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
         alt="Caffe Latte"
-      />
+      /> */}
       <Stack>
         <CardBody className="nopaque">
           <Heading size="md">{groupName}</Heading>
@@ -82,89 +200,5 @@ const SingleGroupItem = ({
         </CardFooter>
       </Stack>
     </Card>
-  )
-}
-
-async function GetGroups() {
-  const magic = new Magic('pk_live_1E208ADDCC61B99E', {
-    network: 'goerli'
-  })
-
-  const provider = new ethers.providers.Web3Provider(magic.rpcProvider as any)
-  const signer = provider.getSigner()
-
-  const factoryInstance = new ethers.Contract(
-    '0xf4F2d67CeCB7A8D43e5392c4FF78E98cFB83e7A0',
-    OurCloneFactory.abi,
-    signer
-  )
-  const daos = await factoryInstance.getDaos()
-  console.log(daos)
-}
-
-export default function Groups() {
-  // eslint-disable-next-line no-void
-  void GetGroups()
-
-  return (
-    <>
-      <Layout>
-        <Box
-          mt="5%"
-          p="5%"
-          backdropFilter="auto"
-          backdropBlur="8px"
-          border="1px solid rgba(255, 255, 255, 0.4)"
-          backgroundColor="rgba(255, 255, 255, 0.2)"
-          borderRadius="20px"
-          shadow="0px 0px 5px rgba(255,255,255,0.3), 1px 1px 5px rgba(255,255,255,0.3),10px 10px 30px rgba(0,0,0,0.3)"
-        >
-          <Center>
-            <Box>
-              <Flex>
-                <Heading
-                  w="100%"
-                  textAlign="left"
-                  fontWeight="bold"
-                  mb="2%"
-                  color="white"
-                  // color="white"
-                >
-                  Groups
-                </Heading>
-              </Flex>
-              <Flex>
-                <SingleGroupItem
-                  groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
-                  groupName="Test Group Name"
-                  groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
-                  numMembers={40}
-                />
-                <SingleGroupItem
-                  groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
-                  groupName="Test Group Name"
-                  groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
-                  numMembers={40}
-                />
-              </Flex>
-              <Flex>
-                <SingleGroupItem
-                  groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
-                  groupName="Test Group Name"
-                  groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
-                  numMembers={40}
-                />
-                <SingleGroupItem
-                  groupAddress="0x77a11df57295e5d6d4923872223a75bd96887a3a"
-                  groupName="Test Group Name"
-                  groupDescription="Lorem ipsum mofo. Very intesting description describing the purpose of the group!"
-                  numMembers={40}
-                />
-              </Flex>
-            </Box>
-          </Center>
-        </Box>
-      </Layout>
-    </>
   )
 }

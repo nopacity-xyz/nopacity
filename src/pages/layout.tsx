@@ -1,14 +1,16 @@
 import { Box } from '@chakra-ui/react'
 
 import NavBar from '@/components/Navigation/NavBar'
+import { Config } from '@/config'
 
 import DynamicBackground from './bg'
 
 interface Props {
+  config: Config
   children?: React.ReactNode
 }
 
-export default function Layout({ children }: Props) {
+export default function Layout({ config, children }: Props) {
   return (
     <Box
       w="100%"
@@ -19,7 +21,7 @@ export default function Layout({ children }: Props) {
     >
       <DynamicBackground />
       <Box maxWidth={1080} m="auto" position="relative">
-        <NavBar />
+        <NavBar config={config} />
         <Box m="5%" mt="0px" mb="0px">
           {children}
         </Box>
