@@ -10,6 +10,8 @@
     "deploy.dao": "hardhat run scripts/OurDeploy.ts",
     "deploy.factory": "hardhat run scripts/deployFactory.ts",
     "deploy.paymentToken": "hardhat run scripts/deployTestPaymentToken.ts",
+    "dev": "hardhat node",
+    "dev.deploy": "npm-run-all deploy.factory deploy.paymentToken",
     "fix": "npm-run-all -p fix.es fix.other",
     "fix.es": "eslint . --fix",
     "fix.other": "prettier --write --ignore-path .other.prettierignore .",
