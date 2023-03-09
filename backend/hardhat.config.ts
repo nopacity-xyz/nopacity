@@ -15,8 +15,13 @@ const config: HardhatUserConfig = {
       }
     }
   },
+  defaultNetwork: 'hardhat',
   networks: {
-    localhost: {},
+    hardhat: {
+      mining: {
+        auto: true
+      }
+    },
     goerli: {
       url: process.env.RPC_URL,
       accounts: [process.env.PRIVATE_KEY as any]
