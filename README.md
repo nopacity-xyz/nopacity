@@ -17,7 +17,7 @@
     <br />
     <a href="https://presolve.xyz">View Live Site</a>
     ·
-        <a href="https://github.com/presolve-xyz/presolve/blob/main/Presolve.xyz%20Overview.pdf">View Overview</a>
+        <a href="https://github.com/presolve-xyz/presolve/blob/main/Presolve.xyz_Overview.pdf">View Overview</a>
     ·
     <a href="https://github.com/presolve-xyz/presolve/issues">Report Bug</a>
     ·
