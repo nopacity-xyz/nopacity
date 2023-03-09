@@ -39,22 +39,23 @@ import React, { ChangeEvent, useState } from 'react'
 import { asConfig, Config } from '@/config'
 import { getContracts } from '@/contracts'
 import { getMagic } from '@/utils/getMagic'
+import { timeInSeconds, VotingPeriod } from '@/utils/timeInSeconds'
 
 import Layout from '../layout'
 
-// interface GroupConfigData {
-//   token: {
-//     tokenName: string
-//     tokenSymbol: string
-//   }
-//   governor: {
-//     groupName: string
-//     groupDescription: string
-//     votingQuantity: number
-//     votingPeriod: string
-//     quorumFraction: number
-//   }
-// }
+interface GroupConfigData {
+  token: {
+    tokenName: string
+    tokenSymbol: string
+  }
+  governor: {
+    groupName: string
+    groupDescription: string
+    votingQuantity: number
+    votingPeriod: VotingPeriod
+    quorumFraction: number
+  }
+}
 
 interface Props {
   config: Config
@@ -69,7 +70,7 @@ export default function CreateGroup(props: Props) {
   const { isOpen, onToggle } = useDisclosure()
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [GroupData, setGroupData] = useState({
+  const [GroupData, setGroupData] = useState<GroupConfigData>({
     token: {
       tokenName: '',
       tokenSymbol: ''
@@ -120,63 +121,22 @@ export default function CreateGroup(props: Props) {
     const determinedGovernorAddress = await getNextAddressFromFactory(nonce)
     const determinedTokenAddress = await getNextAddressFromFactory(nonce + 1)
 
-    // const timeInSeconds = (quantity: number, period: string) => {
-    //   let result
-
-    //   if (period === 'weeks') {
-    //     result = quantity * 7 * 24 * 60 * 60
-    //   }
-    //   if (period === 'days') {
-    //     result = quantity * 24 * 60 * 60
-    //   }
-    //   if (period === 'hours') {
-    //     result = quantity * 60 * 60
-    //   }
-    //   if (period === 'minutes') {
-    //     result = quantity * 60
-    //   }
-    //   return result
-    // }
-
-    // // Deploy contract group!
-    // const contract = await factoryInstance.createDAO(
-    //   determinedGovernorAddress,
-    //   GroupData.governor.groupName,
-    //   GroupData.governor.groupDescription,
-    //   determinedTokenAddress,
-    //   determinedTimeLockAddress,
-    //   '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
-    //   1,
-    //   timeInSeconds(
-    //     GroupData.governor.votingQuantity,
-    //     GroupData.governor.votingPeriod
-    //   ),
-    //   GroupData.governor.quorumFraction,
-    //   GroupData.token.tokenName,
-    //   GroupData.token.tokenSymbol,
-    //   { gasLimit: 300000 }
-    // )
-
-    const daoName = 'ETHSD'
-    const daoDescription = 'ETHSD'
     const votingDelay = 1
-    const votingPeriod = 50400 // 1 sweek
-    // const tokenName = 'OurToken'
-    // const tokenSymbol = 'OUT'
-    // const timelockDelay = 300 // 1 hour
-    const quorumFraction = 1
 
     const tx = await ourCloneFactory.createDAO(
-      daoName,
-      daoDescription,
+      GroupData.governor.groupName,
+      GroupData.governor.groupDescription,
       determinedGovernorAddress,
       determinedTokenAddress,
       config.paymentTokenAddress,
       votingDelay,
-      votingPeriod,
-      quorumFraction,
-      'USDC',
-      'USDC',
+      timeInSeconds(
+        GroupData.governor.votingQuantity,
+        GroupData.governor.votingPeriod
+      ),
+      GroupData.governor.quorumFraction,
+      GroupData.token.tokenName,
+      GroupData.token.tokenSymbol,
       { gasLimit: 3000000 }
     )
 
@@ -354,7 +314,7 @@ export default function CreateGroup(props: Props) {
                         ...prevState,
                         governor: {
                           ...prevState.governor,
-                          votingPeriod: e.target.value
+                          votingPeriod: e.target.value as VotingPeriod
                         }
                       }))
                       console.log(GroupData.governor.votingPeriod)
